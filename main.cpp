@@ -12,7 +12,7 @@ int main(int argc, char* argv[])
 	while (game->IsRunning())
 	{
 		game->Input();
-		game->Update();
+		game->Update();  //Game loop
 		game->Render();
 	}
 
