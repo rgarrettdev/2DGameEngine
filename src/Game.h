@@ -16,6 +16,7 @@ public:
 	void Update();
 	void Render();
 	void Destroy();
+	int ticksLastFrame;
 
 private:
 	bool isRunning;

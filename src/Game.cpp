@@ -20,8 +20,8 @@ bool Game::IsRunning() const
 
 float projectilePosX = 0.0f; //Temporary object for renderering
 float projectilePosY = 0.0f; //Temporary object for renderering
-float projectileVelX = 0.1f; //Temporary object for renderering
-float projectileVelY = 0.1f; //Temporary object for renderering
+float projectileVelX = 30.0f; //Temporary object for renderering
+float projectileVelY = 30.0f; //Temporary object for renderering
 
 void Game::Init(int width, int height)
 {
@@ -55,9 +55,21 @@ void Game::Init(int width, int height)
 }
 
 void Game::Update()
-{
-	projectilePosX += projectileVelX;
-	projectilePosY += projectileVelY;
+{	/**Loop is used to allow the program to wait until ~16ms has ellapsed since last frame.
+	This is important check on faster hardware, as it could of updated the game in less than ~16ms**/
+	while (!SDL_TICKS_PASSED(SDL_GetTicks(), ticksLastFrame + FRAME_TIME_TARGET));
+
+	// deltaTime equals the difference in ticks from the last frame converted to seconds.
+	float deltaTime = (SDL_GetTicks() - ticksLastFrame) / 1000.0f;
+
+	//This sets a maximun value for deltaTime, useful when using breakpoints for debugging.
+	deltaTime = (deltaTime > 0.05F) ? 0.05f : deltaTime;
+
+	//Sets the ticks for the current frame to be used in the next call.
+	ticksLastFrame = SDL_GetTicks(); //SDL_GetTicks returns the miliseconds from calling SDL_Init.
+
+	projectilePosX += projectileVelX * deltaTime;
+	projectilePosY += projectileVelY * deltaTime;
 }
 void Game::Render()
 {
