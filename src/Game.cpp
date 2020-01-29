@@ -1,12 +1,14 @@
 #include <iostream>
 #include "Definitions.h"
 #include "Game.h"
+#include <glm.hpp>
 
 Game::Game()
 {
 	this->isRunning = false;
 	this->renderer = NULL;
 	this->window = NULL;
+	this->ticksLastFrame = 0;
 }
 
 Game::~Game()
@@ -18,10 +20,8 @@ bool Game::IsRunning() const
 	return this->isRunning;
 }
 
-float projectilePosX = 0.0f; //Temporary object for renderering
-float projectilePosY = 0.0f; //Temporary object for renderering
-float projectileVelX = 30.0f; //Temporary object for renderering
-float projectileVelY = 30.0f; //Temporary object for renderering
+glm::vec2 projectilePos = glm::vec2(0.0f, 0.0f);
+glm::vec2 projectileVel = glm::vec2(20.0f, 20.0f);
 
 void Game::Init(int width, int height)
 {
@@ -68,8 +68,7 @@ void Game::Update()
 	//Sets the ticks for the current frame to be used in the next call.
 	ticksLastFrame = SDL_GetTicks(); //SDL_GetTicks returns the miliseconds from calling SDL_Init.
 
-	projectilePosX += projectileVelX * deltaTime;
-	projectilePosY += projectileVelY * deltaTime;
+	projectilePos = glm::vec2(projectilePos.x + projectileVel.x * deltaTime, projectilePos.y + projectileVel.y * deltaTime);
 }
 void Game::Render()
 {
@@ -78,8 +77,8 @@ void Game::Render()
 
 	SDL_Rect projectile //SDL_Rect is a struct with the definition of a rectangle.
 	{
-		(int)projectilePosX,	//Cast int since we are using pixels.
-		(int)projectilePosY,    //Cast int since we are using pixels.
+		(int)projectilePos.x,	//Cast int since we are using pixels.
+		(int)projectilePos.y,    //Cast int since we are using pixels.
 		10,
 		10
 	};

@@ -16,11 +16,11 @@ public:
 	void Update();
 	void Render();
 	void Destroy();
-	int ticksLastFrame;
 
 private:
 	bool isRunning;
 	SDL_Window* window;
 	SDL_Renderer* renderer;
+	int ticksLastFrame;
 };
 #endif
