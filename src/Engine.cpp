@@ -1,9 +1,9 @@
 #include <iostream>
 #include "Definitions.h"
-#include "Game.h"
+#include "Engine.h"
 #include <glm.hpp>
 
-Game::Game()
+Engine::Engine()
 {
 	this->isRunning = false;
 	this->renderer = NULL;
@@ -11,11 +11,11 @@ Game::Game()
 	this->ticksLastFrame = 0;
 }
 
-Game::~Game()
+Engine::~Engine()
 {
 }
 
-bool Game::IsRunning() const
+bool Engine::IsRunning() const
 {
 	return this->isRunning;
 }
@@ -23,7 +23,7 @@ bool Game::IsRunning() const
 glm::vec2 projectilePos = glm::vec2(0.0f, 0.0f);
 glm::vec2 projectileVel = glm::vec2(20.0f, 20.0f);
 
-void Game::Init(int width, int height)
+void Engine::Init(int width, int height)
 {
 	if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
 	{
@@ -54,7 +54,7 @@ void Game::Init(int width, int height)
 	return;
 }
 
-void Game::Update()
+void Engine::Update()
 {	/**Loop is used to allow the program to wait until ~16ms has ellapsed since last frame.
 	This is important check on faster hardware, as it could of updated the game in less than ~16ms**/
 	while (!SDL_TICKS_PASSED(SDL_GetTicks(), ticksLastFrame + FRAME_TIME_TARGET));
@@ -66,13 +66,16 @@ void Game::Update()
 	deltaTime = (deltaTime > 0.05F) ? 0.05f : deltaTime;
 
 	//Sets the ticks for the current frame to be used in the next call.
-	ticksLastFrame = SDL_GetTicks(); //SDL_GetTicks returns the miliseconds from calling SDL_Init.
+	ticksLastFrame = SDL_GetTicks(); //SDL_GetTicks returns the time in miliseconds from calling of the function SDL_Init.
 
 	projectilePos = glm::vec2(projectilePos.x + projectileVel.x * deltaTime, projectilePos.y + projectileVel.y * deltaTime);
 }
-void Game::Render()
+void Engine::Render()
 {
-	SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255);
+	/*This funtion clears the back buffer, it then draws all the game objects.
+	Finally it swaps the front and back buffer. This is called Double Buffering*/
+
+	SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255); //Set background colour.
 	SDL_RenderClear(renderer); //Clear the backbuffer
 
 	SDL_Rect projectile //SDL_Rect is a struct with the definition of a rectangle.
@@ -84,9 +87,9 @@ void Game::Render()
 	};
 	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 	SDL_RenderFillRect(renderer, &projectile);
-	SDL_RenderPresent(renderer);
+	SDL_RenderPresent(renderer); //Swap front and back buffers
 }
-void Game::Input()
+void Engine::Input()
 {
 	SDL_Event event;
 	SDL_PollEvent(&event);
@@ -107,7 +110,7 @@ void Game::Input()
 	}
 }
 
-void Game::Destroy()
+void Engine::Destroy()
 {
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
