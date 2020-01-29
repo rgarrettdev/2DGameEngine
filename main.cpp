@@ -5,18 +5,18 @@
 
 int main(int argc, char* argv[])
 {
-	Game* game = new Game();
+	Engine* engine = new Engine();
 
-	game->Init(WINDOW_WIDTH, WINDOW_HEIGHT);
+	engine->Init(WINDOW_WIDTH, WINDOW_HEIGHT);
 
-	while (game->IsRunning())
+	while (engine->IsRunning())
 	{
-		game->Input();
-		game->Update();  //Game loop
-		game->Render();
+		engine->Input();
+		engine->Update();  //Game loop
+		engine->Render();
 	}
 
-	game->Destroy();
+	engine->Destroy();
 
 	return 0;
 }
