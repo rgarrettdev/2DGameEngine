@@ -1,15 +1,15 @@
-#ifndef GAME_H
-#define GAME_H
+#ifndef ENGINE_H
+#define ENGINE_H
 
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 
-class Game
+class Engine
 {
 public:
-	Game(); //Consturctor
-	~Game(); //Destructor
+	Engine(); //Consturctor
+	~Engine(); //Destructor
 	bool IsRunning() const;
 	void Init(int width, int height);
 	void Input();

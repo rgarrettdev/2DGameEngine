@@ -1,7 +1,7 @@
 #include <iostream>
 #include <SDL.h>
 #include "src/Definitions.h"
-#include "src/Game.h"
+#include "src/Engine.h"
 
 int main(int argc, char* argv[])
 {
