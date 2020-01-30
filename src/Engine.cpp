@@ -139,10 +139,6 @@ void Engine::PrintEntites() {
 
 	for (int i = 0; i < debugEntity.size(); i++)
 	{
-		for (int j= 0; ; j++)
-		{
-			std::cout << debugEntity[i]->name << " "; //Prints entities name to console.
-		}
-
+			std::cout << i << " " << debugEntity[i]->name << std::endl; //Prints entities name to console.
 	}
 }
