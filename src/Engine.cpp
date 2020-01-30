@@ -1,12 +1,16 @@
 #include <iostream>
-#include "Definitions.h"
-#include "Engine.h"
+#include "./Definitions.h"
+#include "./Engine.h"
+#include "./Components/TransformComponent.h"
 #include <glm.hpp>
+#include <vector>
+
+EntityManager manager;
+SDL_Renderer* Engine::renderer;
 
 Engine::Engine()
 {
 	this->isRunning = false;
-	this->renderer = NULL;
 	this->window = NULL;
 	this->ticksLastFrame = 0;
 }
@@ -19,9 +23,6 @@ bool Engine::IsRunning() const
 {
 	return this->isRunning;
 }
-
-glm::vec2 projectilePos = glm::vec2(0.0f, 0.0f);
-glm::vec2 projectileVel = glm::vec2(20.0f, 20.0f);
 
 void Engine::Init(int width, int height)
 {
@@ -50,6 +51,9 @@ void Engine::Init(int width, int height)
 		return;
 	}
 
+	LoadLevel(0);
+	PrintEntites();
+
 	isRunning = true;
 	return;
 }
@@ -68,7 +72,10 @@ void Engine::Update()
 	//Sets the ticks for the current frame to be used in the next call.
 	ticksLastFrame = SDL_GetTicks(); //SDL_GetTicks returns the time in miliseconds from calling of the function SDL_Init.
 
-	projectilePos = glm::vec2(projectilePos.x + projectileVel.x * deltaTime, projectilePos.y + projectileVel.y * deltaTime);
+	//Cascades to update all entities and all their components.
+	manager.Update(deltaTime);
+
+
 }
 void Engine::Render()
 {
@@ -76,18 +83,16 @@ void Engine::Render()
 	Finally it swaps the front and back buffer. This is called Double Buffering*/
 
 	SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255); //Set background colour.
-	SDL_RenderClear(renderer); //Clear the backbuffer
+	SDL_RenderClear(renderer); //Clear the backbuffer.
 
-	SDL_Rect projectile //SDL_Rect is a struct with the definition of a rectangle.
+	if (manager.HasNoEntities()) //Check to see if there are any entities.
 	{
-		(int)projectilePos.x,	//Cast int since we are using pixels.
-		(int)projectilePos.y,    //Cast int since we are using pixels.
-		10,
-		10
-	};
-	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-	SDL_RenderFillRect(renderer, &projectile);
-	SDL_RenderPresent(renderer); //Swap front and back buffers
+		return;
+	}
+	// Call manager.render to render all enitites and all their components.
+	manager.Render();
+
+	SDL_RenderPresent(renderer); //Swap front and back buffers.
 }
 void Engine::Input()
 {
@@ -115,4 +120,29 @@ void Engine::Destroy()
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
 	SDL_Quit();
+}
+
+void Engine::LoadLevel(int levelNumber) {
+	
+	Entity& newEntity(manager.AddEntity("Pixel")); //Adds entity called Pixel.
+	newEntity.AddComponent<TransformComponent>(0, 0, 20, 20, 32, 32, 1); //Adds a transform to the newEntity(Pixel).
+
+	Entity& newEntity1(manager.AddEntity("Box"));
+	newEntity.AddComponent<TransformComponent>(0, 250, 0, 20, 10, 10, 1);
+
+	Entity& newEntity2(manager.AddEntity("Pixel2"));
+	newEntity.AddComponent<TransformComponent>(100, 0, 20, 0, 50, 50, 1);
+}
+
+void Engine::PrintEntites() {
+	std::vector<Entity*> debugEntity(manager.GetEntities());
+
+	for (int i = 0; i < debugEntity.size(); i++)
+	{
+		for (int j= 0; ; j++)
+		{
+			std::cout << debugEntity[i]->name << " "; //Prints entities name to console.
+		}
+
+	}
 }
