@@ -4,6 +4,7 @@
 #include "./Entity.h"
 #include "./Component.h"
 #include <vector>
+#include <iostream>
 
 class EntityManager
 {
@@ -15,6 +16,7 @@ public:
 	Entity& AddEntity(std::string entityName); //Adds entities to the system, returns a reference to a entity.
 	std::vector<Entity*> GetEntities() const; //Returns a list of all entites.
 	unsigned int GetEntityCount(); //Returns the number of entities.
+	void ListAllEntities() const;
 private:
 	std::vector<Entity*> entities;
 

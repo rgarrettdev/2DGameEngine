@@ -4,7 +4,6 @@
 #include "./Components/TransformComponent.h"
 #include "./Components/SpriteComponent.h"
 #include <glm.hpp>
-#include <vector>
 
 EntityManager manager;
 AssetManager* Engine::assetManager = new AssetManager(&manager); //Instationating the static asset manager
@@ -54,7 +53,7 @@ void Engine::Init(int width, int height)
 	}
 
 	LoadLevel(0);
-	PrintEntites();
+	manager.ListAllEntities();
 
 	isRunning = true;
 	return;
@@ -134,13 +133,4 @@ void Engine::LoadLevel(int levelNumber) {
 	Entity& newEntity(manager.AddEntity("Mario")); //Adds entity called mario.
 	newEntity.AddComponent<TransformComponent>(0, 0, 20, 20, 512, 513, 1); //Adds a transform to the newEntity(Mario).
 	newEntity.AddComponent<SpriteComponent>("mario-image");
-}
-
-void Engine::PrintEntites() {
-	std::vector<Entity*> debugEntity(manager.GetEntities());
-
-	for (int i = 0; i < debugEntity.size(); i++)
-	{
-			std::cout << i << " " << debugEntity[i]->name << std::endl; //Prints entities name to console.
-	}
 }

@@ -37,3 +37,13 @@ std::vector<Entity*> EntityManager::GetEntities() const{ //used for debugging th
 unsigned int EntityManager::GetEntityCount() { //used for debugging the data structure.
 	return entities.size();
 }
+
+void EntityManager::ListAllEntities() const{
+	unsigned int i = 0;
+	for (auto& entity: entities)
+	{
+		std::cout << "Entity[" << i << "];" << entity->name << std::endl;
+		entity->ListAllComponents();
+		i++;
+	}
+}

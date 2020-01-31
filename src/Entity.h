@@ -22,6 +22,8 @@ public:
 	bool IsActive() const; //Getter function.
 	std::string name;
 
+	void ListAllComponents() const;
+
 	//Generics used to add abritary components.
 	template <typename T, typename... TArgs>
 	T& AddComponent(TArgs&&... args) {
@@ -39,6 +41,14 @@ public:
 	template <typename T>
 	T* GetComponent() {
 		return static_cast<T*>(componentType[&typeid(T)]); //static cast to convert to a type pointer.
+	}
+
+	template <typename T>
+	bool HasComponent() const {
+		if (componentType[&typeid(T)] = T)
+		{
+			return true;
+		}
 	}
 private:
 	EntityManager& manager;

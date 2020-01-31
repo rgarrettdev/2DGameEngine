@@ -22,7 +22,6 @@ public:
 	static SDL_Renderer* renderer; //Allows components to access the renderer.
 	static AssetManager* assetManager;
 	void LoadLevel(int levelNumber);
-	void PrintEntites();
 
 private:
 	bool isRunning;
