@@ -3,8 +3,10 @@
 
 #include <vector>
 #include <string>
+#include <map>
 #include "./Component.h"
 #include "./EntityManager.h"
+#include <typeinfo>
 
 class EntityManager;
 //class Component;
@@ -27,14 +29,22 @@ public:
 
 		newComponent->owner = this; //Entity.h is owner of the new component.
 		components.emplace_back(newComponent);
+		//typeid() returns type indentication infromation at run time.
+		componentType[&typeid(*newComponent)] = newComponent; //Keeps a map of all that are added components based on type.
 		newComponent->Initialise();
 		return *newComponent;
 	}
 
+	//Template used as generic way to get component types.
+	template <typename T>
+	T* GetComponent() {
+		return static_cast<T*>(componentType[&typeid(T)]); //static cast to convert to a type pointer.
+	}
 private:
 	EntityManager& manager;
 	bool isActive;
 	std::vector<Component*> components;
+	std::map<const std::type_info*, Component*> componentType; //This map keep track of type of components and points to the components.
 };
 
 #endif
