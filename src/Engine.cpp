@@ -2,10 +2,12 @@
 #include "./Definitions.h"
 #include "./Engine.h"
 #include "./Components/TransformComponent.h"
+#include "./Components/SpriteComponent.h"
 #include <glm.hpp>
 #include <vector>
 
 EntityManager manager;
+AssetManager* Engine::assetManager = new AssetManager(&manager); //Instationating the static asset manager
 SDL_Renderer* Engine::renderer;
 
 Engine::Engine()
@@ -124,14 +126,14 @@ void Engine::Destroy()
 
 void Engine::LoadLevel(int levelNumber) {
 	
-	Entity& newEntity(manager.AddEntity("Pixel")); //Adds entity called Pixel.
-	newEntity.AddComponent<TransformComponent>(0, 0, 20, 20, 32, 32, 1); //Adds a transform to the newEntity(Pixel).
+	//include new assets to the assetmanager list.
+	std::string textureFilePath = "./assets/images/mario.png";
+	assetManager->AddTexture("mario-image", textureFilePath.c_str()); //How to add a texture to the asset manager
 
-	Entity& newEntity1(manager.AddEntity("Box"));
-	newEntity.AddComponent<TransformComponent>(0, 250, 0, 20, 10, 10, 1);
-
-	Entity& newEntity2(manager.AddEntity("Pixel2"));
-	newEntity.AddComponent<TransformComponent>(100, 0, 20, 0, 50, 50, 1);
+	//include entities and componenets.
+	Entity& newEntity(manager.AddEntity("Mario")); //Adds entity called mario.
+	newEntity.AddComponent<TransformComponent>(0, 0, 20, 20, 512, 513, 1); //Adds a transform to the newEntity(Mario).
+	newEntity.AddComponent<SpriteComponent>("mario-image");
 }
 
 void Engine::PrintEntites() {

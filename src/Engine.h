@@ -6,6 +6,8 @@
 #include <SDL_ttf.h>
 #include "./EntityManager.h"
 
+class AssetManager;
+
 class Engine
 {
 public:
@@ -18,6 +20,7 @@ public:
 	void Render();
 	void Destroy();
 	static SDL_Renderer* renderer; //Allows components to access the renderer.
+	static AssetManager* assetManager;
 	void LoadLevel(int levelNumber);
 	void PrintEntites();
 

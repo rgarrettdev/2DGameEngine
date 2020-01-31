@@ -2,6 +2,8 @@
 
 SDL_Texture* TextureManager::LoadTexture(const char* fileName) {
 	SDL_Surface* surface = IMG_Load(fileName);
+	printf(IMG_GetError()); //Prints if an error occured during image loading.
+
 	SDL_Texture* texture = SDL_CreateTextureFromSurface(Engine::renderer, surface);
 	SDL_FreeSurface(surface);
 

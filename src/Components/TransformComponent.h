@@ -32,15 +32,7 @@ public:
 		position.y += velocity.y * deltaTime;
 	}
 	void Render() override {
-		SDL_Rect transformRectangle
-		{
-			(int)position.x,
-			(int)position.y,
-			height,
-			width
-		};
-		SDL_SetRenderDrawColor(Engine::renderer, 255, 255, 255, 255);
-		SDL_RenderFillRect(Engine::renderer, &transformRectangle);
+
 	}
 private:
 
