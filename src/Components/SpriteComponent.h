@@ -7,7 +7,7 @@
 #include "./TransformComponent.h"
 #include "../Animation.h"
 
-class SpriteComponent: public Component 
+class SpriteComponent : public Component 
 {
 
 public:
@@ -27,17 +27,19 @@ public:
 
 		if (hasDirection)
 		{
-			Animation downAnimation = Animation(0, numFrames, animationSpeed);
-			Animation upAnimation = Animation(0,  numFrames, animationSpeed);
-			Animation leftAnimation = Animation(0,  numFrames, animationSpeed);
-			Animation rightAnimation = Animation(0, numFrames, animationSpeed);
+			Animation downAnimation = Animation(1, numFrames, animationSpeed);
+			Animation upAnimation = Animation(1,  numFrames, animationSpeed);
+			Animation leftAnimation = Animation(3,  numFrames, animationSpeed);
+			Animation rightAnimation = Animation(2, numFrames, animationSpeed);
+			Animation attackAnimation = Animation(0, numFrames, animationSpeed);
 
 			animations.emplace("DownAnimation", downAnimation);
 			animations.emplace("UpAnimation", upAnimation);
 			animations.emplace("LeftAnimation", leftAnimation);
 			animations.emplace("RightAnimation", rightAnimation);
+			animations.emplace("AttackAnimation", attackAnimation);
 
-			this->animationIndex = 0;
+			this->animationIndex = 3;
 			this->currentAnimationName = "RightAnimation";
 		}
 		else

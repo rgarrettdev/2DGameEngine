@@ -3,11 +3,15 @@
 #include "./Engine.h"
 #include "./Components/TransformComponent.h"
 #include "./Components/SpriteComponent.h"
+#include "Components/ControlComponent.h"
+#include "./Map.h"
 #include <glm.hpp>
 
 EntityManager manager;
 AssetManager* Engine::assetManager = new AssetManager(&manager); //Instationating the static asset manager
 SDL_Renderer* Engine::renderer;
+SDL_Event Engine::event;
+Map* map;
 
 Engine::Engine()
 {
@@ -97,7 +101,6 @@ void Engine::Render()
 }
 void Engine::Input()
 {
-	SDL_Event event;
 	SDL_PollEvent(&event);
 	switch (event.type)
 	{
@@ -127,10 +130,17 @@ void Engine::LoadLevel(int levelNumber) {
 	
 	//include new assets to the assetmanager list.
 	//assetManager->AddTexture("mario-image", std::string ("./assets/images/mario.png").c_str()); //How to add a texture to the asset manager
-	assetManager->AddTexture("player-image", std::string("./assets/images/woodcutter.png").c_str());
+	assetManager->AddTexture("player-image", std::string("./assets/images/spritesheet.png").c_str());
 	//include entities and componenets.
+	assetManager->AddTexture("tilemap", std::string("./assets/tilemaps/tilemap.png").c_str());
+
+	map = new Map("tilemap", 2, 16);
+	map->LoadMap("./assets/tilemaps/testmap.map", 25, 20);
 
 	Entity& playerEntity(manager.AddEntity("Player"));
-	playerEntity.AddComponent<TransformComponent>(240, 160, 0, 0, 48, 48, 2);
-	playerEntity.AddComponent<SpriteComponent>("player-image", 6, 90, false, false);
+	// Args = position height, position  width, velocity y, velocity  x, image height, image width, scale.
+	playerEntity.AddComponent<TransformComponent>(240, 160, 0, 0, 48, 48, 1); 
+	// Args = id of asset, int number of Frames to render then loop, int animation playback speed, bool hasDirectionional animations, bool isFixed to a single point.
+	playerEntity.AddComponent<SpriteComponent>("player-image", 6, 90, true, false);
+	playerEntity.AddComponent<ControlComponent>("w", "s", "a", "d", "space");
 }

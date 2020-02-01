@@ -21,6 +21,7 @@ public:
 	void Destroy();
 	static SDL_Renderer* renderer; //Allows components to access the renderer.
 	static AssetManager* assetManager;
+	static SDL_Event event;
 	void LoadLevel(int levelNumber);
 
 private:
