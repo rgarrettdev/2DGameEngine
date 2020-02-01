@@ -45,7 +45,7 @@ public:
 
 	template <typename T>
 	bool HasComponent() const {
-		return componentType.count(&typeid(T));
+		return componentType.count(&typeid(T)); //Returns a 1 if element with &typeid(T) is present in the map container. Returns 0 if not present.
 	}
 private:
 	EntityManager& manager;

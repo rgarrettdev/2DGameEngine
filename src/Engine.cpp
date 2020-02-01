@@ -126,11 +126,11 @@ void Engine::Destroy()
 void Engine::LoadLevel(int levelNumber) {
 	
 	//include new assets to the assetmanager list.
-	std::string textureFilePath = "./assets/images/mario.png";
-	assetManager->AddTexture("mario-image", textureFilePath.c_str()); //How to add a texture to the asset manager
-
+	//assetManager->AddTexture("mario-image", std::string ("./assets/images/mario.png").c_str()); //How to add a texture to the asset manager
+	assetManager->AddTexture("player-image", std::string("./assets/images/woodcutter.png").c_str());
 	//include entities and componenets.
-	Entity& newEntity(manager.AddEntity("Mario")); //Adds entity called mario.
-	newEntity.AddComponent<TransformComponent>(0, 0, 20, 20, 512, 513, 1); //Adds a transform to the newEntity(Mario).
-	newEntity.AddComponent<SpriteComponent>("mario-image");
+
+	Entity& playerEntity(manager.AddEntity("Player"));
+	playerEntity.AddComponent<TransformComponent>(240, 160, 0, 0, 48, 48, 2);
+	playerEntity.AddComponent<SpriteComponent>("player-image", 6, 90, false, false);
 }
