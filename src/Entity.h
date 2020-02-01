@@ -45,10 +45,7 @@ public:
 
 	template <typename T>
 	bool HasComponent() const {
-		if (componentType[&typeid(T)] = T)
-		{
-			return true;
-		}
+		return componentType.count(&typeid(T));
 	}
 private:
 	EntityManager& manager;
