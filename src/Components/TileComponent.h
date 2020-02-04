@@ -36,6 +36,8 @@ public:
 
 	void Update(float deltaTime) override {
 		//Here is where we will manage tile positions based on camera control.
+		destinationRect.x = position.x - Engine::camera.x;
+		destinationRect.y = position.y - Engine::camera.y;
 	}
 	void Render() override {
 		TextureManager::Draw(texture, sourceRect, destinationRect, SDL_FLIP_NONE);

@@ -12,6 +12,7 @@ AssetManager* Engine::assetManager = new AssetManager(&manager); //Instationatin
 SDL_Renderer* Engine::renderer;
 SDL_Event Engine::event;
 Map* map;
+SDL_Rect Engine::camera = {0,0,WINDOW_WIDTH,WINDOW_HEIGHT};
 
 Engine::Engine()
 {
@@ -63,6 +64,20 @@ void Engine::Init(int width, int height)
 	return;
 }
 
+Entity& playerEntity(manager.AddEntity("Player", PLAYER_LAYER));
+
+void Engine::HandleCamera() {
+
+	TransformComponent* playerTransform = playerEntity.GetComponent<TransformComponent>();
+	camera.x = playerTransform->position.x - (WINDOW_WIDTH / 2); //Binds the camera to player entity movements.
+	camera.y = playerTransform->position.y - (WINDOW_HEIGHT / 2);
+
+	camera.x = camera.x < 0 ? 0 : camera.x;
+	camera.y = camera.y < 0 ? 0 : camera.y;
+	camera.x = camera.x > camera.w ? camera.w : camera.x; //Clamping the values of the camera to the tile map
+	camera.y = camera.y > camera.h ? camera.h : camera.y;
+}
+
 void Engine::Update()
 {	/**Loop is used to allow the program to wait until ~16ms has ellapsed since last frame.
 	This is important check on faster hardware, as it could of updated the game in less than ~16ms**/
@@ -80,6 +95,7 @@ void Engine::Update()
 	//Cascades to update all entities and all their components.
 	manager.Update(deltaTime);
 
+	HandleCamera();
 
 }
 void Engine::Render()
@@ -99,6 +115,8 @@ void Engine::Render()
 
 	SDL_RenderPresent(renderer); //Swap front and back buffers.
 }
+
+
 void Engine::Input()
 {
 	SDL_PollEvent(&event);
@@ -126,6 +144,8 @@ void Engine::Destroy()
 	SDL_Quit();
 }
 
+
+
 void Engine::LoadLevel(int levelNumber) {
 	
 	//include new assets to the assetmanager list.
@@ -135,10 +155,10 @@ void Engine::LoadLevel(int levelNumber) {
 	//include entities and componenets.
 	assetManager->AddTexture("tilemap", std::string("./assets/tilemaps/tilemap.png").c_str());
 
-	map = new Map("tilemap", 2, 16);
-	map->LoadMap("./assets/tilemaps/testmap.map", 25, 20);
+	map = new Map("tilemap", 4, 16);
+	map->LoadMap("./assets/tilemaps/testmap.map", 25, 30);
 
-	Entity& playerEntity(manager.AddEntity("Player", PLAYER_LAYER));
+	
 	// Args = position height, position  width, velocity y, velocity  x, image height, image width, scale.
 	playerEntity.AddComponent<TransformComponent>(240, 160, 0, 0, 48, 48, 1); 
 	// Args = id of asset, int number of Frames to render then loop, int animation playback speed, bool hasDirectionional animations, bool isFixed to a single point.

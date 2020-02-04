@@ -22,7 +22,9 @@ public:
 	static SDL_Renderer* renderer; //Allows components to access the renderer.
 	static AssetManager* assetManager;
 	static SDL_Event event;
+	static SDL_Rect camera; //allows this to be called across the program. used in tile component and sprite component.
 	void LoadLevel(int levelNumber);
+	void HandleCamera();
 
 private:
 	bool isRunning;

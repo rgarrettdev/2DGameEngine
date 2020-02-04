@@ -77,8 +77,8 @@ public:
 			sourceRect.x = (sourceRect.w * static_cast<int>((SDL_GetTicks() / animationSpeed) % numFrames)); 
 		}
 		sourceRect.y = animationIndex * transform->height;
-		destinationRect.y = static_cast<int>(transform->position.y);
-		destinationRect.x = static_cast<int>(transform->position.x);
+		destinationRect.y = static_cast<int>(transform->position.y) - (isFixed ? 0 : Engine::camera.y); // IF statement Prevents UI from moving off screen.
+		destinationRect.x = static_cast<int>(transform->position.x) - (isFixed ? 0 : Engine::camera.x);
 		destinationRect.h = transform->height * transform->scale;
 		destinationRect.w = transform->width * transform->scale;
 	}
