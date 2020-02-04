@@ -4,7 +4,6 @@
 #include "./Entity.h"
 #include "./Component.h"
 #include <vector>
-#include <iostream>
 
 class EntityManager
 {
@@ -18,6 +17,8 @@ public:
 	std::vector<Entity*> GetEntitiesByLayer(LayerType layer) const; //Returns a list of all entites.
 	unsigned int GetEntityCount(); //Returns the number of entities.
 	void ListAllEntities() const;
+	CollisionType CheckCollisions() const;
+
 private:
 	std::vector<Entity*> entities;
 

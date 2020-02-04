@@ -3,7 +3,8 @@
 #include "./Engine.h"
 #include "./Components/TransformComponent.h"
 #include "./Components/SpriteComponent.h"
-#include "Components/ControlComponent.h"
+#include "./Components/ControlComponent.h"
+#include "./Components/ColliderComponent.h"
 #include "./Map.h"
 #include <glm.hpp>
 
@@ -78,6 +79,28 @@ void Engine::HandleCamera() {
 	camera.y = camera.y > camera.h ? camera.h : camera.y;
 }
 
+void Engine::CheckCollisions() {
+	CollisionType collisionType = manager.CheckCollisions();
+	if (collisionType == PLAYER_ENEMY_COLLISION)
+	{
+		ProcessGameOver();
+	}
+	if (collisionType == PLAYER_LEVEL_COMPLETE_COLLISION)
+	{
+		ProcessNextLevel(1);
+	}
+}
+
+void Engine::ProcessGameOver() {
+	std::cout << "Game Over" << std::endl;
+	isRunning = false;
+}
+
+void Engine::ProcessNextLevel(int levelNumber) {
+	std::cout << "Next Level" << std::endl;
+	isRunning = false;
+}
+
 void Engine::Update()
 {	/**Loop is used to allow the program to wait until ~16ms has ellapsed since last frame.
 	This is important check on faster hardware, as it could of updated the game in less than ~16ms**/
@@ -96,8 +119,9 @@ void Engine::Update()
 	manager.Update(deltaTime);
 
 	HandleCamera();
-
+	CheckCollisions(); //Check if entites are colliding.
 }
+
 void Engine::Render()
 {
 	/*This funtion clears the back buffer, it then draws all the game objects.
@@ -164,8 +188,10 @@ void Engine::LoadLevel(int levelNumber) {
 	// Args = id of asset, int number of Frames to render then loop, int animation playback speed, bool hasDirectionional animations, bool isFixed to a single point.
 	playerEntity.AddComponent<SpriteComponent>("player-image", 6, 90, true, false);
 	playerEntity.AddComponent<ControlComponent>("w", "s", "a", "d", "space");
+	playerEntity.AddComponent<ColliderComponent>("PLAYER", 240, 160, 32, 32); //Even though values are updated, intilaise with position for saftey.
 
 	Entity& tankEntity(manager.AddEntity("Tank", ENEMY_LAYER));
 	tankEntity.AddComponent<TransformComponent>(0, 0, 10, 10, 32, 32, 1);
 	tankEntity.AddComponent<SpriteComponent>("tank-image");
+	tankEntity.AddComponent<ColliderComponent>("ENEMY", 0, 0, 32, 32);
 }

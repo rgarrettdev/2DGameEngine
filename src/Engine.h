@@ -25,6 +25,9 @@ public:
 	static SDL_Rect camera; //allows this to be called across the program. used in tile component and sprite component.
 	void LoadLevel(int levelNumber);
 	void HandleCamera();
+	void CheckCollisions();
+	void ProcessGameOver();
+	void ProcessNextLevel(int levelNumber);
 
 private:
 	bool isRunning;
