@@ -34,6 +34,6 @@ void Map::LoadMap(std::string filePath, int mapSizeX, int mapSizeY) {
 
 void Map::AddTile(int sourceX, int sourceY, int x, int y) {
 	//Add new tile entity in engine
-	Entity& newTile(manager.AddEntity("Tile")); //Will have serveral tiles called tile.
+	Entity& newTile(manager.AddEntity("Tile", TILEMAP_LAYER)); //Will have serveral tiles called tile.
 	newTile.AddComponent<TileComponent>(sourceX, sourceY, x, y, tileSize, scale, textureID);
 }

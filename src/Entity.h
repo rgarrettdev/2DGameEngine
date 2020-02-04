@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <map>
+#include "./Definitions.h"
 #include "./Component.h"
 #include "./EntityManager.h"
 #include <typeinfo>
@@ -15,7 +16,8 @@ class Entity
 {
 public:
 	Entity(EntityManager& manager); //Constructor.
-	Entity(EntityManager& manager, std::string name); //Constructor with a specified name.
+	Entity(EntityManager& manager, std::string name, LayerType layer); //Constructor with a specified name.
+	LayerType layer;
 	void Update(float deltaTime);
 	void Render();
 	void Destroy();

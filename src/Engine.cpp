@@ -131,16 +131,21 @@ void Engine::LoadLevel(int levelNumber) {
 	//include new assets to the assetmanager list.
 	//assetManager->AddTexture("mario-image", std::string ("./assets/images/mario.png").c_str()); //How to add a texture to the asset manager
 	assetManager->AddTexture("player-image", std::string("./assets/images/spritesheet.png").c_str());
+	assetManager->AddTexture("tank-image", std::string("./assets/images/tank-big-right.png").c_str());
 	//include entities and componenets.
 	assetManager->AddTexture("tilemap", std::string("./assets/tilemaps/tilemap.png").c_str());
 
 	map = new Map("tilemap", 2, 16);
 	map->LoadMap("./assets/tilemaps/testmap.map", 25, 20);
 
-	Entity& playerEntity(manager.AddEntity("Player"));
+	Entity& playerEntity(manager.AddEntity("Player", PLAYER_LAYER));
 	// Args = position height, position  width, velocity y, velocity  x, image height, image width, scale.
 	playerEntity.AddComponent<TransformComponent>(240, 160, 0, 0, 48, 48, 1); 
 	// Args = id of asset, int number of Frames to render then loop, int animation playback speed, bool hasDirectionional animations, bool isFixed to a single point.
 	playerEntity.AddComponent<SpriteComponent>("player-image", 6, 90, true, false);
 	playerEntity.AddComponent<ControlComponent>("w", "s", "a", "d", "space");
+
+	Entity& tankEntity(manager.AddEntity("Tank", ENEMY_LAYER));
+	tankEntity.AddComponent<TransformComponent>(0, 0, 10, 10, 32, 32, 1);
+	tankEntity.AddComponent<SpriteComponent>("tank-image");
 }
