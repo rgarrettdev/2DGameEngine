@@ -1,6 +1,8 @@
 #ifndef DEFINITIONS_H
 #define DEFINITIONS_H
 
+#include <SDL.h>
+
 const unsigned int WINDOW_WIDTH = 800;
 const unsigned int WINDOW_HEIGHT = 600;
 const unsigned int FPS_TARGET = 60;
@@ -25,5 +27,6 @@ enum CollisionType
 
 };
 const unsigned int NUM_LAYERS = 6;
-
+const SDL_Color WHITE_COLOUR = { 255,255,255,255 }; //r,g,b,transparancy
+const SDL_Color GREEN_COLOUR = { 0,255,0,255 };
 #endif

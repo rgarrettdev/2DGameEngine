@@ -5,6 +5,7 @@
 #include "./Components/SpriteComponent.h"
 #include "./Components/ControlComponent.h"
 #include "./Components/ColliderComponent.h"
+#include "./Components/UiTextComponent.h"
 #include "./Map.h"
 #include <glm.hpp>
 
@@ -36,6 +37,11 @@ void Engine::Init(int width, int height)
 	if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
 	{
 		std::cerr << "Error initialising SDL. SDL ERROR: " << SDL_GetError() << std::endl;
+		return;
+	}
+	if (TTF_Init() !=0)
+	{
+		std::cerr << "Error intialosing SDL TTF. SDL TTF ERROR: " << TTF_GetError() << std::endl;
 		return;
 	}
 	window = SDL_CreateWindow(
@@ -178,6 +184,7 @@ void Engine::LoadLevel(int levelNumber) {
 	assetManager->AddTexture("tank-image", std::string("./assets/images/tank-big-right.png").c_str());
 	//include entities and componenets.
 	assetManager->AddTexture("tilemap", std::string("./assets/tilemaps/tilemap.png").c_str());
+	assetManager->AddFont("charriot-font", std::string("./assets/fonts/charriot.ttf").c_str(), 28);
 
 	map = new Map("tilemap", 4, 16);
 	map->LoadMap("./assets/tilemaps/testmap.map", 25, 30);
@@ -194,4 +201,7 @@ void Engine::LoadLevel(int levelNumber) {
 	tankEntity.AddComponent<TransformComponent>(0, 0, 10, 10, 32, 32, 1);
 	tankEntity.AddComponent<SpriteComponent>("tank-image");
 	tankEntity.AddComponent<ColliderComponent>("ENEMY", 0, 0, 32, 32);
+
+	Entity& levelNumberUI(manager.AddEntity("levelNumberUI", UI_LAYER));
+	levelNumberUI.AddComponent<UiTextComponent>(10, 10, "First Level...", "charriot-font", WHITE_COLOUR);
 }

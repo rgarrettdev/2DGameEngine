@@ -10,7 +10,18 @@ AssetManager::~AssetManager() {
 }
 
 void AssetManager::DestroyData() {
+	fonts.clear();
 	textures.clear();
+}
+
+void AssetManager::AddFont(std::string fontID, const char* fileName, int fontSize)
+{
+	fonts.emplace(fontID, FontManager::LoadFont(fileName, fontSize));
+}
+
+TTF_Font* AssetManager::GetFont(std::string fontID)
+{
+	return fonts[fontID];
 }
 
 void AssetManager::AddTexture(std::string textureID, const char* fileName) {
