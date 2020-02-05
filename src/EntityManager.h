@@ -18,6 +18,7 @@ public:
 	unsigned int GetEntityCount(); //Returns the number of entities.
 	void ListAllEntities() const;
 	CollisionType CheckCollisions() const;
+	void DestroyInactiveEntities();
 
 private:
 	std::vector<Entity*> entities;

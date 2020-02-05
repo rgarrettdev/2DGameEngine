@@ -6,6 +6,7 @@
 #include "./Components/ControlComponent.h"
 #include "./Components/ColliderComponent.h"
 #include "./Components/UiTextComponent.h"
+#include "./Components/ProjectileComponent.h"
 #include "./Map.h"
 #include <glm.hpp>
 
@@ -95,6 +96,10 @@ void Engine::CheckCollisions() {
 	{
 		ProcessNextLevel(1);
 	}
+	if (collisionType == PLAYER_PROJECTILE_COLLISION)
+	{
+		ProcessGameOver();
+	}
 }
 
 void Engine::ProcessGameOver() {
@@ -177,14 +182,15 @@ void Engine::Destroy()
 
 
 void Engine::LoadLevel(int levelNumber) {
+	//ALL THIS WILL BE LOADED VIA A Lua SCRIPT IN THE FUTURE!!
 	
 	//include new assets to the assetmanager list.
-	//assetManager->AddTexture("mario-image", std::string ("./assets/images/mario.png").c_str()); //How to add a texture to the asset manager
 	assetManager->AddTexture("player-image", std::string("./assets/images/spritesheet.png").c_str());
 	assetManager->AddTexture("tank-image", std::string("./assets/images/tank-big-right.png").c_str());
-	//include entities and componenets.
 	assetManager->AddTexture("tilemap", std::string("./assets/tilemaps/tilemap.png").c_str());
 	assetManager->AddFont("charriot-font", std::string("./assets/fonts/charriot.ttf").c_str(), 28);
+	assetManager->AddTexture("projectile-image", std::string("./assets/images/bullet-enemy.png").c_str());
+
 
 	map = new Map("tilemap", 4, 16);
 	map->LoadMap("./assets/tilemaps/testmap.map", 25, 30);
@@ -195,12 +201,18 @@ void Engine::LoadLevel(int levelNumber) {
 	// Args = id of asset, int number of Frames to render then loop, int animation playback speed, bool hasDirectionional animations, bool isFixed to a single point.
 	playerEntity.AddComponent<SpriteComponent>("player-image", 6, 90, true, false);
 	playerEntity.AddComponent<ControlComponent>("w", "s", "a", "d", "space");
-	playerEntity.AddComponent<ColliderComponent>("PLAYER", 240, 160, 32, 32); //Even though values are updated, intilaise with position for saftey.
+	playerEntity.AddComponent<ColliderComponent>("PLAYER", 240, 160, 48, 48); //Even though values are updated, intilaise with position for saftey.
 
 	Entity& tankEntity(manager.AddEntity("Tank", ENEMY_LAYER));
-	tankEntity.AddComponent<TransformComponent>(0, 0, 10, 10, 32, 32, 1);
+	tankEntity.AddComponent<TransformComponent>(150, 495, 0, 0, 32, 32, 1);
 	tankEntity.AddComponent<SpriteComponent>("tank-image");
-	tankEntity.AddComponent<ColliderComponent>("ENEMY", 0, 0, 32, 32);
+	tankEntity.AddComponent<ColliderComponent>("ENEMY", 150, 495, 32, 32);
+
+	Entity& projectileEntity(manager.AddEntity("projectile", PROJECTILE_LAYER));
+	projectileEntity.AddComponent<TransformComponent>(150 + 16, 495 + 16, 0, 0, 4, 4, 1);
+	projectileEntity.AddComponent<SpriteComponent>("projectile-image");
+	projectileEntity.AddComponent<ColliderComponent>("PROJECTILE", 150 + 16, 495 + 16, 4, 4);
+	projectileEntity.AddComponent<ProjectileComponent>(150, 270, 200, true); // speed, angle in degrees, range, times shot.
 
 	Entity& levelNumberUI(manager.AddEntity("levelNumberUI", UI_LAYER));
 	levelNumberUI.AddComponent<UiTextComponent>(10, 10, "First Level...", "charriot-font", WHITE_COLOUR);

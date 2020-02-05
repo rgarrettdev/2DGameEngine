@@ -155,6 +155,7 @@
     <ClInclude Include="src\Component.h" />
     <ClInclude Include="src\Components\ColliderComponent.h" />
     <ClInclude Include="src\Components\ControlComponent.h" />
+    <ClInclude Include="src\Components\ProjectileComponent.h" />
     <ClInclude Include="src\Components\SpriteComponent.h" />
     <ClInclude Include="src\Components\TileComponent.h" />
     <ClInclude Include="src\Components\TransformComponent.h" />
