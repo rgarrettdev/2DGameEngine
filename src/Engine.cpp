@@ -197,11 +197,11 @@ void Engine::LoadLevel(int levelNumber) {
 
 	
 	// Args = position height, position  width, velocity y, velocity  x, image height, image width, scale.
-	playerEntity.AddComponent<TransformComponent>(240, 160, 0, 0, 48, 48, 1); 
+	playerEntity.AddComponent<TransformComponent>(240, 475, 0, 0, 48, 48, 1);
 	// Args = id of asset, int number of Frames to render then loop, int animation playback speed, bool hasDirectionional animations, bool isFixed to a single point.
 	playerEntity.AddComponent<SpriteComponent>("player-image", 6, 90, true, false);
 	playerEntity.AddComponent<ControlComponent>("w", "s", "a", "d", "space");
-	playerEntity.AddComponent<ColliderComponent>("PLAYER", 240, 160, 48, 48); //Even though values are updated, intilaise with position for saftey.
+	playerEntity.AddComponent<ColliderComponent>("PLAYER", 240, 475, 48, 48); //Even though values are updated, intilaise with position for saftey.
 
 	Entity& tankEntity(manager.AddEntity("Tank", ENEMY_LAYER));
 	tankEntity.AddComponent<TransformComponent>(150, 495, 0, 0, 32, 32, 1);
