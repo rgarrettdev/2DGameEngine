@@ -9,6 +9,8 @@
 #include "./Components/ProjectileComponent.h"
 #include "./Map.h"
 #include <glm.hpp>
+#include <sol.hpp>
+
 
 EntityManager manager;
 AssetManager* Engine::assetManager = new AssetManager(&manager); //Instationating the static asset manager
@@ -72,13 +74,7 @@ void Engine::Init(int width, int height)
 	return;
 }
 
-Entity& playerEntity(manager.AddEntity("Player", PLAYER_LAYER));
-
 void Engine::HandleCamera() {
-
-	TransformComponent* playerTransform = playerEntity.GetComponent<TransformComponent>();
-	camera.x = playerTransform->position.x - (WINDOW_WIDTH / 2); //Binds the camera to player entity movements.
-	camera.y = playerTransform->position.y - (WINDOW_HEIGHT / 2);
 
 	camera.x = camera.x < 0 ? 0 : camera.x;
 	camera.y = camera.y < 0 ? 0 : camera.y;
@@ -182,38 +178,48 @@ void Engine::Destroy()
 
 
 void Engine::LoadLevel(int levelNumber) {
-	//ALL THIS WILL BE LOADED VIA A Lua SCRIPT IN THE FUTURE!!
-	
-	//include new assets to the assetmanager list.
-	assetManager->AddTexture("player-image", std::string("./assets/images/spritesheet.png").c_str());
-	assetManager->AddTexture("tank-image", std::string("./assets/images/tank-big-right.png").c_str());
-	assetManager->AddTexture("tilemap", std::string("./assets/tilemaps/tilemap.png").c_str());
-	assetManager->AddFont("charriot-font", std::string("./assets/fonts/charriot.ttf").c_str(), 28);
-	assetManager->AddTexture("projectile-image", std::string("./assets/images/bullet-enemy.png").c_str());
+	//ALL THIS WILL BE LOADED VIA Lua SCRIPT!!
+	sol::state lua;
+	lua.open_libraries(sol::lib::base, sol::lib::os, sol::lib::math);
 
+	std::string levelName = "Level" + std::to_string(levelNumber);
+	lua.script_file("./assets/scripts/" + levelName + ".lua");
 
-	map = new Map("tilemap", 4, 16);
-	map->LoadMap("./assets/tilemaps/testmap.map", 25, 30);
+	/*************************************************************************************/
+	/*						LOADS ASSETS FROM LUA SCRIPT.								 */
+	/*************************************************************************************/
+	sol::table levelData = lua[levelName];
+	sol::table levelAssets = levelData["assets"];
+	unsigned int assetIndex = 0;
+	while (true)
+	{
+		sol::optional<sol::table> existsAssetNode = levelAssets[assetIndex];
+		if (existsAssetNode == sol::nullopt) //Try to read table, if null then break.
+		{
+			break;
+		}
+		else
+		{
+			sol::table asset = levelAssets[assetIndex];
+			std::string assetType = asset["type"];
+			if (assetType.compare("texture") == 0)
+			{
+				std::string assetID = asset["id"];
+				std::string assetFile = asset["file"];
+				assetManager->AddTexture(assetID, assetFile.c_str());
+			}
+		}
+		assetIndex++;
+	}
 
-	
-	// Args = position height, position  width, velocity y, velocity  x, image height, image width, scale.
-	playerEntity.AddComponent<TransformComponent>(240, 475, 0, 0, 48, 48, 1);
-	// Args = id of asset, int number of Frames to render then loop, int animation playback speed, bool hasDirectionional animations, bool isFixed to a single point.
-	playerEntity.AddComponent<SpriteComponent>("player-image", 6, 90, true, false);
-	playerEntity.AddComponent<ControlComponent>("w", "s", "a", "d", "space");
-	playerEntity.AddComponent<ColliderComponent>("PLAYER", 240, 475, 48, 48); //Even though values are updated, intilaise with position for saftey.
+	/*************************************************************************************/
+	/*						LOADS MAP FROM LUA SCRIPT.								     */
+	/*************************************************************************************/
 
-	Entity& tankEntity(manager.AddEntity("Tank", ENEMY_LAYER));
-	tankEntity.AddComponent<TransformComponent>(150, 495, 0, 0, 32, 32, 1);
-	tankEntity.AddComponent<SpriteComponent>("tank-image");
-	tankEntity.AddComponent<ColliderComponent>("ENEMY", 150, 495, 32, 32);
+	sol::table levelMap = levelData["map"];
+	std::string mapTextureID = levelMap["textureAssetID"];
+	std::string mapFile = levelMap["file"];
 
-	Entity& projectileEntity(manager.AddEntity("projectile", PROJECTILE_LAYER));
-	projectileEntity.AddComponent<TransformComponent>(150 + 16, 495 + 16, 0, 0, 4, 4, 1);
-	projectileEntity.AddComponent<SpriteComponent>("projectile-image");
-	projectileEntity.AddComponent<ColliderComponent>("PROJECTILE", 150 + 16, 495 + 16, 4, 4);
-	projectileEntity.AddComponent<ProjectileComponent>(150, 270, 200, true); // speed, angle in degrees, range, times shot.
-
-	Entity& levelNumberUI(manager.AddEntity("levelNumberUI", UI_LAYER));
-	levelNumberUI.AddComponent<UiTextComponent>(10, 10, "First Level...", "charriot-font", WHITE_COLOUR);
+	map = new Map(mapTextureID, static_cast<int>(levelMap["scale"]), static_cast<int>(levelMap["tileSize"]));
+	map->LoadMap(mapFile, static_cast<int>(levelMap["mapSizeX"]), static_cast<int>(levelMap["mapSizeY"]));
 }
