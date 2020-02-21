@@ -19,6 +19,11 @@ public:
 		isFixed = false;
 		SetTexture(assetTextureID);
 	}
+	SpriteComponent(std::string assetTextureID, bool isFixed) {
+		isAnimated = false;
+		isFixed = isFixed;
+		SetTexture(assetTextureID);
+	}
 	SpriteComponent(std::string id, int numFrames, int animationSpeed, bool hasDirection, bool isFixed) {
 		isAnimated = true;
 		this->numFrames = numFrames;
