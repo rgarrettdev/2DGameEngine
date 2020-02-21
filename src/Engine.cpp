@@ -74,6 +74,149 @@ void Engine::Init(int width, int height)
 	return;
 }
 
+void Engine::LoadLevel(int levelNumber) {
+	//ALL THIS WILL BE LOADED VIA Lua SCRIPT!!
+	sol::state lua;
+	lua.open_libraries(sol::lib::base, sol::lib::os, sol::lib::math);
+
+	std::string levelName = "Level" + std::to_string(levelNumber);
+	lua.script_file("./assets/scripts/" + levelName + ".lua");
+
+	/*************************************************************************************/
+	/*						LOADS ASSETS FROM LUA SCRIPT.								 */
+	/*************************************************************************************/
+	sol::table levelData = lua[levelName];
+	sol::table levelAssets = levelData["assets"];
+	unsigned int assetIndex = 0;
+	while (true)
+	{
+		sol::optional<sol::table> existsAssetNode = levelAssets[assetIndex];
+		if (existsAssetNode == sol::nullopt) //Try to read table, if null then break.
+		{
+			break;
+		}
+		else
+		{
+			sol::table asset = levelAssets[assetIndex];
+			std::string assetType = asset["type"];
+			if (assetType.compare("texture") == 0)
+			{
+				std::string assetID = asset["id"];
+				std::string assetFile = asset["file"];
+				assetManager->AddTexture(assetID, assetFile.c_str());
+			}
+			if (assetType.compare("font") == 0)
+			{
+				std::string assetID = asset["id"];
+				std::string assetFile = asset["file"];
+				int fontSize = asset["fontSize"];
+				assetManager->AddFont(assetID, assetFile.c_str(), fontSize);
+			}
+		}
+		assetIndex++;
+	}
+
+	/*************************************************************************************/
+	/*						LOADS MAP FROM LUA SCRIPT.								     */
+	/*************************************************************************************/
+
+	sol::table levelMap = levelData["map"];
+	std::string mapTextureID = levelMap["textureAssetID"];
+	std::string mapFile = levelMap["file"];
+
+	map = new Map(mapTextureID, static_cast<int>(levelMap["scale"]), static_cast<int>(levelMap["tileSize"]));
+	map->LoadMap(mapFile, static_cast<int>(levelMap["mapSizeX"]), static_cast<int>(levelMap["mapSizeY"]));
+
+	/*************************************************************************************/
+	/*						LOADS ENTITES AND COMPONENTS FROM LUA SCRIPT.				 */
+	/*************************************************************************************/
+
+	sol::table levelEntities = levelEntities["entities"];
+	unsigned int entityIndex = 0;
+	while (true)
+	{
+		sol::optional<sol::table> exisitsEntityNode = levelEntities[entityIndex];
+		if (exisitsEntityNode == sol::nullopt)
+		{
+			break;
+		}
+		else
+		{
+			sol::table entity = levelEntities[entityIndex];
+			std::string entityName = entity["name"];
+			LayerType entityLayer = static_cast<LayerType>(static_cast<int>(entityLayer));
+
+			//Add new entity
+			auto& newEntity(manager.AddEntity(entityName, entityLayer));
+
+			//Add transform component
+			sol::optional<sol::table> existsTransformComponent = entity["components"];
+			if (existsTransformComponent != sol::nullopt)
+			{
+				newEntity.AddComponent<TransformComponent>(
+					static_cast<int>(entity["components"]["transform"]["position"]["y"]),
+					static_cast<int>(entity["components"]["transform"]["position"]["x"]),
+					static_cast<int>(entity["components"]["transform"]["velocity"]["y"]),
+					static_cast<int>(entity["components"]["transform"]["velocity"]["x"]),
+					static_cast<int>(entity["components"]["transform"]["height"]),
+					static_cast<int>(entity["components"]["transform"]["width"]),
+					static_cast<int>(entity["components"]["transform"]["scale"])
+					);
+			}
+			//Add sprite component
+			sol::optional<sol::table> existsSpriteComponent = entity["components"];
+			if (existsSpriteComponent != sol::nullopt)
+			{
+				std::string textureID = entity["components"]["sprite"]["textureAssetID"];
+				bool isAnimated = entity["components"]["sprite"]["animated"];
+				if (isAnimated)
+				{
+					newEntity.AddComponent<SpriteComponent>(
+						textureID,
+						static_cast<int>(entity["components"]["sprite"]["frameCount"]),
+						static_cast<int>(entity["components"]["sprite"]["animationSpeed"]),
+						static_cast<bool>(entity["components"]["sprite"]["hasDirections"]),
+						static_cast<bool>(entity["components"]["sprite"]["fixed"])
+						);
+				}
+				else
+				{
+					newEntity.AddComponent<SpriteComponent>(textureID, false);
+				}
+			}
+			//Add input component
+			sol::optional<sol::table> existsInputComponent = entity["components"]["input"];
+			if (existsInputComponent != sol::nullopt)
+			{
+				sol::optional<sol::table> existsKeyboardInput = entity["components"]["input"]["keyboard"];
+				if (existsKeyboardInput != sol::nullopt)
+				{
+					std::string upKey = entity["components"]["input"]["keyboard"]["up"];
+					std::string downKey = entity["components"]["input"]["keyboard"]["down"];
+					std::string leftKey = entity["components"]["input"]["keyboard"]["left"];
+					std::string rightKey = entity["components"]["input"]["keyboard"]["right"];
+					std::string shootKey = entity["components"]["input"]["keyboard"]["shoot"];
+
+					newEntity.AddComponent<ControlComponent>(upKey, downKey, leftKey, rightKey, shootKey);
+				}
+			}
+			//Add collider component
+			sol::optional<sol::table> existsColliderComponent = entity["components"]["collider"];
+			if (existsColliderComponent != sol::nullopt)
+			{
+				std::string colliderTag = entity["components"]["collider"]["tags"];
+				newEntity.AddComponent<ColliderComponent>(
+					colliderTag,
+					static_cast<int>(entity["components"]["collider"]["position"]["x"]),
+					static_cast<int>(entity["components"]["collider"]["position"]["y"]),
+					static_cast<int>(entity["components"]["collider"]["width"]),
+					static_cast<int>(entity["components"]["collider"]["height"])
+					);
+			}
+		}
+	}
+}
+
 void Engine::HandleCamera() {
 
 	camera.x = camera.x < 0 ? 0 : camera.x;
@@ -173,60 +316,4 @@ void Engine::Destroy()
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
 	SDL_Quit();
-}
-
-
-
-void Engine::LoadLevel(int levelNumber) {
-	//ALL THIS WILL BE LOADED VIA Lua SCRIPT!!
-	sol::state lua;
-	lua.open_libraries(sol::lib::base, sol::lib::os, sol::lib::math);
-
-	std::string levelName = "Level" + std::to_string(levelNumber);
-	lua.script_file("./assets/scripts/" + levelName + ".lua");
-
-	/*************************************************************************************/
-	/*						LOADS ASSETS FROM LUA SCRIPT.								 */
-	/*************************************************************************************/
-	sol::table levelData = lua[levelName];
-	sol::table levelAssets = levelData["assets"];
-	unsigned int assetIndex = 0;
-	while (true)
-	{
-		sol::optional<sol::table> existsAssetNode = levelAssets[assetIndex];
-		if (existsAssetNode == sol::nullopt) //Try to read table, if null then break.
-		{
-			break;
-		}
-		else
-		{
-			sol::table asset = levelAssets[assetIndex];
-			std::string assetType = asset["type"];
-			if (assetType.compare("texture") == 0)
-			{
-				std::string assetID = asset["id"];
-				std::string assetFile = asset["file"];
-				assetManager->AddTexture(assetID, assetFile.c_str());
-			}
-			if (assetType.compare("font") == 0)
-			{
-				std::string assetID = asset["id"];
-				std::string assetFile = asset["file"];
-				int fontSize = asset["fontSize"];
-				assetManager->AddFont(assetID, assetFile.c_str(), fontSize);
-			}
-		}
-		assetIndex++;
-	}
-
-	/*************************************************************************************/
-	/*						LOADS MAP FROM LUA SCRIPT.								     */
-	/*************************************************************************************/
-
-	sol::table levelMap = levelData["map"];
-	std::string mapTextureID = levelMap["textureAssetID"];
-	std::string mapFile = levelMap["file"];
-
-	map = new Map(mapTextureID, static_cast<int>(levelMap["scale"]), static_cast<int>(levelMap["tileSize"]));
-	map->LoadMap(mapFile, static_cast<int>(levelMap["mapSizeX"]), static_cast<int>(levelMap["mapSizeY"]));
 }
