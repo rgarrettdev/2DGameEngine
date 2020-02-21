@@ -208,6 +208,13 @@ void Engine::LoadLevel(int levelNumber) {
 				std::string assetFile = asset["file"];
 				assetManager->AddTexture(assetID, assetFile.c_str());
 			}
+			if (assetType.compare("font") == 0)
+			{
+				std::string assetID = asset["id"];
+				std::string assetFile = asset["file"];
+				int fontSize = asset["fontSize"];
+				assetManager->AddFont(assetID, assetFile.c_str(), fontSize);
+			}
 		}
 		assetIndex++;
 	}
