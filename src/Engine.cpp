@@ -83,7 +83,7 @@ void Engine::LoadLevel(int levelNumber) {
 	lua.script_file("./assets/scripts/" + levelName + ".lua");
 
 	/*************************************************************************************/
-	/*						LOADS ASSETS FROM LUA SCRIPT.								 */
+							/*LOADS ASSETS FROM LUA SCRIPT.*/
 	/*************************************************************************************/
 	sol::table levelData = lua[levelName];
 	sol::table levelAssets = levelData["assets"];
@@ -117,7 +117,7 @@ void Engine::LoadLevel(int levelNumber) {
 	}
 
 	/*************************************************************************************/
-	/*						LOADS MAP FROM LUA SCRIPT.								     */
+								/*LOADS MAP FROM LUA SCRIPT.*/
 	/*************************************************************************************/
 
 	sol::table levelMap = levelData["map"];
@@ -128,7 +128,7 @@ void Engine::LoadLevel(int levelNumber) {
 	map->LoadMap(mapFile, static_cast<int>(levelMap["mapSizeX"]), static_cast<int>(levelMap["mapSizeY"]));
 
 	/*************************************************************************************/
-	/*						LOADS ENTITES AND COMPONENTS FROM LUA SCRIPT.				 */
+						/*LOADS ENTITES AND COMPONENTS FROM LUA SCRIPT.*/
 	/*************************************************************************************/
 
 	sol::table levelEntities = levelEntities["entities"];
@@ -144,7 +144,7 @@ void Engine::LoadLevel(int levelNumber) {
 		{
 			sol::table entity = levelEntities[entityIndex];
 			std::string entityName = entity["name"];
-			LayerType entityLayer = static_cast<LayerType>(static_cast<int>(entityLayer));
+			LayerType entityLayer = static_cast<LayerType>(static_cast<int>(entity["layer"]));
 
 			//Add new entity
 			auto& newEntity(manager.AddEntity(entityName, entityLayer));
