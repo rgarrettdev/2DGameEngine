@@ -4,7 +4,8 @@ Level0 = {
         [1] = { type="texture", id = "player-texture", file = "./assets/images/spritesheet.png" },
         [2] = { type="texture", id = "tank-big-right-texture", file = "./assets/images/tank-big-right.png" },
         [3] = { type="texture", id = "tank-big-down-texture", file = "./assets/images/tank-big-down.png" },
-        [4] = { type="font", id = "charriot-font", file = "./assets/fonts/charriot.ttf", fontSize = 14 }
+        [4] = { type="texture", id = "projectile-texture", file = "./assets/images/bullet-enemy.png" },
+        [5] = { type="font", id = "charriot-font", file = "./assets/fonts/charriot.ttf", fontSize = 14 }
     },
     map = {
         textureAssetID = "terrain-texture",
@@ -14,6 +15,7 @@ Level0 = {
         mapSizeX = 25,
         mapSizeY = 30
     },
+
     entities = {
         [0] = {
             name = "player",
@@ -34,7 +36,7 @@ Level0 = {
                     rotation = 0
                 },
                 sprite = {
-                    textureAssetId = "player-texture",
+                    textureAssetID = "player-texture",
                     animated = true,
                     frameCount = 6,
                     animationSpeed = 90,
@@ -61,8 +63,8 @@ Level0 = {
             components = {
                 transform = {
                     position = {
-                        x = 650,
-                        y = 405
+                        x = 300,
+                        y = 100
                     },
                     velocity = {
                         x = 0,
@@ -74,7 +76,7 @@ Level0 = {
                     rotation = 0
                 },
                 sprite = {
-                    textureAssetId = "tank-big-left-texture",
+                    textureAssetID = "tank-big-right-texture",
                     animated = false
                 },
                 collider = {
@@ -83,11 +85,11 @@ Level0 = {
                 projectileEmitter = {
                     speed = 70,
                     range = 300,
-                    angle = 180,
+                    angle = 0,
                     width = 4,
                     height = 4,
                     shouldLoop = true,
-                    textureAssetId = "projectile-texture"
+                    textureAssetID = "projectile-texture"
                 }
             }
         },
@@ -110,7 +112,7 @@ Level0 = {
                     rotation = 0
                 },
                 sprite = {
-                    textureAssetId = "tank-big-down-texture",
+                    textureAssetID = "tank-big-down-texture",
                     animated = false
                 },
                 collider = {
@@ -123,7 +125,7 @@ Level0 = {
                     width = 4,
                     height = 4,
                     shouldLoop = true,
-                    textureAssetId = "projectile-texture"
+                    textureAssetID = "projectile-texture"
                 }
             }
         }
