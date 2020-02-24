@@ -131,7 +131,7 @@ void Engine::LoadLevel(int levelNumber) {
 						/*LOADS ENTITES AND COMPONENTS FROM LUA SCRIPT.*/
 	/*************************************************************************************/
 
-	sol::table levelEntities = levelEntities["entities"];
+	sol::table levelEntities = levelData["entities"];
 	unsigned int entityIndex = 0;
 	while (true)
 	{
@@ -164,7 +164,7 @@ void Engine::LoadLevel(int levelNumber) {
 					);
 			}
 			//Add sprite component
-			sol::optional<sol::table> existsSpriteComponent = entity["components"];
+			sol::optional<sol::table> existsSpriteComponent = entity["components"]["sprite"];
 			if (existsSpriteComponent != sol::nullopt)
 			{
 				std::string textureID = entity["components"]["sprite"]["textureAssetID"];
@@ -204,16 +204,57 @@ void Engine::LoadLevel(int levelNumber) {
 			sol::optional<sol::table> existsColliderComponent = entity["components"]["collider"];
 			if (existsColliderComponent != sol::nullopt)
 			{
-				std::string colliderTag = entity["components"]["collider"]["tags"];
+				std::string colliderTag = entity["components"]["collider"]["tag"];
 				newEntity.AddComponent<ColliderComponent>(
 					colliderTag,
-					static_cast<int>(entity["components"]["collider"]["position"]["x"]),
-					static_cast<int>(entity["components"]["collider"]["position"]["y"]),
-					static_cast<int>(entity["components"]["collider"]["width"]),
-					static_cast<int>(entity["components"]["collider"]["height"])
+					static_cast<int>(entity["components"]["transform"]["position"]["x"]),
+					static_cast<int>(entity["components"]["transform"]["position"]["y"]),
+					static_cast<int>(entity["components"]["transform"]["width"]),
+					static_cast<int>(entity["components"]["transform"]["height"])
 					);
 			}
+			//Add PROJECTILE COMPONENT
+		sol::optional<sol::table> existsProjectileComponent = entity["components"]["projectileEmitter"];
+			if (existsProjectileComponent != sol::nullopt)
+			{
+				int parentEntityPosX = entity["components"]["transform"]["position"]["x"];
+				int parentEntityPosY = entity["components"]["transform"]["position"]["y"];
+				int parentEntityWidth = entity["components"]["transform"]["width"];
+				int parentEntityHeight = entity["components"]["transform"]["height"];
+				int projectileWidth = entity["components"]["projectileEmitter"]["width"];
+				int projectileHeight = entity["components"]["projectileEmitter"]["height"];
+				int projectileSpeed = entity["components"]["projectileEmitter"]["speed"];
+				int projectileRange = entity["components"]["projectileEmitter"]["range"];
+				int projectileAngle = entity["components"]["projectileEmitter"]["angle"];
+				bool projectileLoop = entity["components"]["projectileEmitter"]["shouldLoop"];
+				std::string textureAssetID = entity["components"]["projectileEmitter"]["textureAssetID"];
+				Entity& projectile(manager.AddEntity("projectile", PROJECTILE_LAYER)); //Create an entity attached to the parent.
+				projectile.AddComponent<TransformComponent>( //Projectile entity has a transform component.
+					parentEntityPosY + (parentEntityHeight / 2),
+					parentEntityPosX + (parentEntityWidth / 2),
+					0,
+					0,
+					projectileHeight,
+					projectileWidth,
+					1
+					);
+				projectile.AddComponent<SpriteComponent>(textureAssetID); //Projectile entity has a Sprite component.
+				projectile.AddComponent<ProjectileComponent>( //Projectile entity has a Pojectile component.
+					projectileSpeed,
+					projectileAngle,
+					projectileRange,
+					projectileLoop
+					);
+				projectile.AddComponent<ColliderComponent>(//Projectile entity has a Collider component.
+					"PROJECTILE",
+					parentEntityPosX,
+					parentEntityPosY,
+					projectileWidth,
+					projectileHeight
+				);
+			}	
 		}
+		entityIndex++;
 	}
 }
 
