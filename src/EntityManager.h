@@ -19,6 +19,7 @@ public:
 	void ListAllEntities() const;
 	CollisionType CheckCollisions() const;
 	void DestroyInactiveEntities();
+	Entity* GetEntityByName(std::string entityName) const;
 
 private:
 	std::vector<Entity*> entities;

@@ -75,6 +75,17 @@ void EntityManager::ListAllEntities() const {
 		i++;
 	}
 }
+
+Entity* EntityManager::GetEntityByName(std::string entityName) const {
+	for (auto* entity : entities)
+	{
+		if (entity->name.compare(entityName) == 0)
+		{
+			return entity;
+		}
+	}
+	return NULL;
+}
 // worst case is O(n2) complexity. due to looping through outer loop "n" times and inner loop "n-1" operations.
 CollisionType EntityManager::CheckCollisions() const {
 	for (int i = 0; i < entities.size() - 1; i++) {

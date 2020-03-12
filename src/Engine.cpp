@@ -18,6 +18,7 @@ SDL_Renderer* Engine::renderer;
 SDL_Event Engine::event;
 Map* map;
 SDL_Rect Engine::camera = {0,0,WINDOW_WIDTH,WINDOW_HEIGHT};
+Entity* player = NULL;
 
 Engine::Engine()
 {
@@ -256,14 +257,22 @@ void Engine::LoadLevel(int levelNumber) {
 		}
 		entityIndex++;
 	}
+	player = manager.GetEntityByName("player");
 }
 
 void Engine::HandleCamera() {
 
-	camera.x = camera.x < 0 ? 0 : camera.x;
-	camera.y = camera.y < 0 ? 0 : camera.y;
-	camera.x = camera.x > camera.w ? camera.w : camera.x; //Clamping the values of the camera to the tile map
-	camera.y = camera.y > camera.h ? camera.h : camera.y;
+	if (player)
+	{
+		TransformComponent* playerTransform = player->GetComponent<TransformComponent>();
+		camera.x = playerTransform->position.x - (WINDOW_WIDTH / 2);
+		camera.y = playerTransform->position.y - (WINDOW_HEIGHT / 2);
+
+		camera.x = camera.x < 0 ? 0 : camera.x;
+		camera.y = camera.y < 0 ? 0 : camera.y;
+		camera.x = camera.x > camera.w ? camera.w : camera.x; //Clamping the values of the camera to the tile map
+		camera.y = camera.y > camera.h ? camera.h : camera.y;
+	}
 }
 
 void Engine::CheckCollisions() {
