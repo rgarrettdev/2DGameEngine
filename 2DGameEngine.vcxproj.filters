@@ -101,5 +101,24 @@
     <ClInclude Include="src\Components\ProjectileComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="resources\resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="assets\images\2d(1).ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="resources\assets\images\2d(1).ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="assets\images\2d.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="resources\2DGameEngine.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>
