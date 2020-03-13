@@ -148,6 +148,7 @@
     <ClCompile Include="src\EntityManager.cpp" />
     <ClCompile Include="src\FontManager.cpp" />
     <ClCompile Include="src\Map.cpp" />
+    <ClCompile Include="src\SoundManager.cpp" />
     <ClCompile Include="src\TextureManager.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -156,6 +157,7 @@
     <ClInclude Include="src\AssetManager.h" />
     <ClInclude Include="src\Collision.h" />
     <ClInclude Include="src\Component.h" />
+    <ClInclude Include="src\Components\AudioComponent.h" />
     <ClInclude Include="src\Components\ColliderComponent.h" />
     <ClInclude Include="src\Components\ControlComponent.h" />
     <ClInclude Include="src\Components\ProjectileComponent.h" />
@@ -169,6 +171,7 @@
     <ClInclude Include="src\EntityManager.h" />
     <ClInclude Include="src\FontManager.h" />
     <ClInclude Include="src\Map.h" />
+    <ClInclude Include="src\SoundManager.h" />
     <ClInclude Include="src\TextureManager.h" />
   </ItemGroup>
   <ItemGroup>
