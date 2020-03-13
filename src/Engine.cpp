@@ -7,6 +7,7 @@
 #include "./Components/ColliderComponent.h"
 #include "./Components/UiTextComponent.h"
 #include "./Components/ProjectileComponent.h"
+#include "./Components/AudioComponent.h"
 #include "./Map.h"
 #include <glm.hpp>
 #include <sol.hpp>
@@ -45,8 +46,12 @@ void Engine::Init(int width, int height)
 	}
 	if (TTF_Init() !=0)
 	{
-		std::cerr << "Error intialosing SDL TTF. SDL TTF ERROR: " << TTF_GetError() << std::endl;
+		std::cerr << "Error intialising SDL TTF. SDL TTF ERROR: " << TTF_GetError() << std::endl;
 		return;
+	}
+	if (Mix_OpenAudio(48000, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
+	{
+		std::cout << "Error: " << Mix_GetError() << std::endl;
 	}
 	window = SDL_CreateWindow(
 		NULL,
@@ -112,6 +117,12 @@ void Engine::LoadLevel(int levelNumber) {
 				std::string assetFile = asset["file"];
 				int fontSize = asset["fontSize"];
 				assetManager->AddFont(assetID, assetFile.c_str(), fontSize);
+			}
+			if (assetType.compare("sound") == 0)
+			{
+				std::string assetID = asset["id"];
+				std::string assetFile = asset["file"];
+				assetManager->AddMusic(assetID, assetFile.c_str());
 			}
 		}
 		assetIndex++;
@@ -253,7 +264,14 @@ void Engine::LoadLevel(int levelNumber) {
 					projectileWidth,
 					projectileHeight
 				);
-			}	
+			}
+						//Add collider component
+			sol::optional<sol::table> existsAudioComponent = entity["components"]["audio"];
+			if (existsAudioComponent != sol::nullopt)
+			{
+				std::string musicID = entity["components"]["audio"]["musicID"];
+				newEntity.AddComponent<AudioComponent>(musicID);
+			}
 		}
 		entityIndex++;
 	}
@@ -336,7 +354,6 @@ void Engine::Render()
 	}
 	// Call manager.render to render all enitites and all their components.
 	manager.Render();
-
 	SDL_RenderPresent(renderer); //Swap front and back buffers.
 }
 
@@ -365,5 +382,6 @@ void Engine::Destroy()
 {
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
+	Mix_Quit();
 	SDL_Quit();
 }
