@@ -126,6 +126,7 @@
       <AdditionalIncludeDirectories>E:\Programming\libs\Lua;E:\Programming\libs\GLM\include;E:\Programming\libs\SDL2_ttf\include;E:\Programming\libs\SDL2_mixer\include;E:\Programming\libs\SDL2_image\include;E:\Programming\libs\SDL2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <BrowseInformation>true</BrowseInformation>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <DisableSpecificWarnings>4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
