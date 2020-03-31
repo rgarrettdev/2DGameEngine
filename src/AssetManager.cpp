@@ -12,7 +12,6 @@ AssetManager::~AssetManager() {
 void AssetManager::DestroyData() {
 	fonts.clear();
 	textures.clear();
-	music.clear();
 }
 
 void AssetManager::AddFont(std::string fontID, const char* fileName, int fontSize)
@@ -23,16 +22,6 @@ void AssetManager::AddFont(std::string fontID, const char* fileName, int fontSiz
 TTF_Font* AssetManager::GetFont(std::string fontID)
 {
 	return fonts[fontID];
-}
-
-void AssetManager::AddMusic(std::string musicID, const char* fileName)
-{
-	music.emplace(musicID, SoundManager::LoadMusic(fileName));
-}
-
-Mix_Music* AssetManager::GetMusic(std::string musicID)
-{
-	return music[musicID];
 }
 
 void AssetManager::AddTexture(std::string textureID, const char* fileName) {

@@ -5,8 +5,7 @@ Level0 = {
         [2] = { type="texture", id = "tank-big-right-texture", file = "./assets/images/tank-big-right.png" },
         [3] = { type="texture", id = "tank-big-down-texture", file = "./assets/images/tank-big-down.png" },
         [4] = { type="texture", id = "projectile-texture", file = "./assets/images/bullet-enemy.png" },
-        [5] = { type="font", id = "charriot-font", file = "./assets/fonts/charriot.ttf", fontSize = 14 },
-        [6] = { type="sound", id = "background-music", file = "./assets/sounds/videogames.mp3" }
+        [5] = { type="font", id = "charriot-font", file = "./assets/fonts/charriot.ttf", fontSize = 14 }
     },
     map = {
         textureAssetID = "terrain-texture",
@@ -55,10 +54,7 @@ Level0 = {
                         right = "d",
                         shoot = "space"
                     }
-                },
-                audio = {
-                    musicID = "background-music"
-				}
+                }
             }
         },
         [1] = {
