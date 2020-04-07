@@ -29,6 +29,7 @@ public:
 	void CheckCollisions();
 	void ProcessGameOver();
 	void ProcessNextLevel(int levelNumber);
+	std::string CheckValidLua(std::string fileName);
 
 private:
 	bool isRunning;

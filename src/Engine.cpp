@@ -86,196 +86,203 @@ void Engine::LoadLevel(int levelNumber) {
 	lua.open_libraries(sol::lib::base, sol::lib::os, sol::lib::math);
 
 	std::string levelName = "Level" + std::to_string(levelNumber);
-	lua.script_file("./assets/scripts/" + levelName + ".lua");
-
-	/*************************************************************************************/
-							/*LOADS ASSETS FROM LUA SCRIPT.*/
-	/*************************************************************************************/
-	sol::table levelData = lua[levelName];
-	sol::table levelAssets = levelData["assets"];
-	unsigned int assetIndex = 0;
-	while (true)
+	std::string validLua = Engine::CheckValidLua("./assets/scripts/" + levelName + ".lua");
+	if (validLua == "PASS")
 	{
-		sol::optional<sol::table> existsAssetNode = levelAssets[assetIndex];
-		if (existsAssetNode == sol::nullopt) //Try to read table, if null then break.
+		lua.script_file("./assets/scripts/" + levelName + ".lua");
+
+		/*************************************************************************************/
+								/*LOADS ASSETS FROM LUA SCRIPT.*/
+		/*************************************************************************************/
+		sol::table levelData = lua[levelName];
+		sol::table levelAssets = levelData["assets"];
+		unsigned int assetIndex = 0;
+		while (true)
 		{
-			break;
-		}
-		else
-		{
-			sol::table asset = levelAssets[assetIndex];
-			std::string assetType = asset["type"];
-			if (assetType.compare("texture") == 0)
+			sol::optional<sol::table> existsAssetNode = levelAssets[assetIndex];
+			if (existsAssetNode == sol::nullopt) //Try to read table, if null then break.
 			{
-				std::string assetID = asset["id"];
-				std::string assetFile = asset["file"];
-				assetManager->AddTexture(assetID, assetFile.c_str());
+				break;
 			}
-			if (assetType.compare("font") == 0)
+			else
 			{
-				std::string assetID = asset["id"];
-				std::string assetFile = asset["file"];
-				int fontSize = asset["fontSize"];
-				assetManager->AddFont(assetID, assetFile.c_str(), fontSize);
-			}
-			if (assetType.compare("sound") == 0)
-			{
-				std::string assetID = asset["id"];
-				std::string assetFile = asset["file"];
-				assetManager->AddMusic(assetID, assetFile.c_str());
-			}
-		}
-		assetIndex++;
-	}
-
-	/*************************************************************************************/
-								/*LOADS MAP FROM LUA SCRIPT.*/
-	/*************************************************************************************/
-
-	sol::table levelMap = levelData["map"];
-	std::string mapTextureID = levelMap["textureAssetID"];
-	std::string mapFile = levelMap["file"];
-
-	map = new Map(mapTextureID, static_cast<int>(levelMap["scale"]), static_cast<int>(levelMap["tileSize"]));
-	map->LoadMap(mapFile, static_cast<int>(levelMap["mapSizeX"]), static_cast<int>(levelMap["mapSizeY"]));
-
-	/*************************************************************************************/
-						/*LOADS ENTITES AND COMPONENTS FROM LUA SCRIPT.*/
-	/*************************************************************************************/
-
-	sol::table levelEntities = levelData["entities"];
-	unsigned int entityIndex = 0;
-	while (true)
-	{
-		sol::optional<sol::table> exisitsEntityNode = levelEntities[entityIndex];
-		if (exisitsEntityNode == sol::nullopt)
-		{
-			break;
-		}
-		else
-		{
-			sol::table entity = levelEntities[entityIndex];
-			std::string entityName = entity["name"];
-			LayerType entityLayer = static_cast<LayerType>(static_cast<int>(entity["layer"]));
-
-			//Add new entity
-			auto& newEntity(manager.AddEntity(entityName, entityLayer));
-
-			//Add transform component
-			sol::optional<sol::table> existsTransformComponent = entity["components"];
-			if (existsTransformComponent != sol::nullopt)
-			{
-				newEntity.AddComponent<TransformComponent>(
-					static_cast<int>(entity["components"]["transform"]["position"]["y"]),
-					static_cast<int>(entity["components"]["transform"]["position"]["x"]),
-					static_cast<int>(entity["components"]["transform"]["velocity"]["y"]),
-					static_cast<int>(entity["components"]["transform"]["velocity"]["x"]),
-					static_cast<int>(entity["components"]["transform"]["height"]),
-					static_cast<int>(entity["components"]["transform"]["width"]),
-					static_cast<int>(entity["components"]["transform"]["scale"])
-					);
-			}
-			//Add sprite component
-			sol::optional<sol::table> existsSpriteComponent = entity["components"]["sprite"];
-			if (existsSpriteComponent != sol::nullopt)
-			{
-				std::string textureID = entity["components"]["sprite"]["textureAssetID"];
-				bool isAnimated = entity["components"]["sprite"]["animated"];
-				if (isAnimated)
+				sol::table asset = levelAssets[assetIndex];
+				std::string assetType = asset["type"];
+				if (assetType.compare("texture") == 0)
 				{
-					newEntity.AddComponent<SpriteComponent>(
-						textureID,
-						static_cast<int>(entity["components"]["sprite"]["frameCount"]),
-						static_cast<int>(entity["components"]["sprite"]["animationSpeed"]),
-						static_cast<bool>(entity["components"]["sprite"]["hasDirections"]),
-						static_cast<bool>(entity["components"]["sprite"]["fixed"])
+					std::string assetID = asset["id"];
+					std::string assetFile = asset["file"];
+					assetManager->AddTexture(assetID, assetFile.c_str());
+				}
+				if (assetType.compare("font") == 0)
+				{
+					std::string assetID = asset["id"];
+					std::string assetFile = asset["file"];
+					int fontSize = asset["fontSize"];
+					assetManager->AddFont(assetID, assetFile.c_str(), fontSize);
+				}
+				if (assetType.compare("sound") == 0)
+				{
+					std::string assetID = asset["id"];
+					std::string assetFile = asset["file"];
+					assetManager->AddMusic(assetID, assetFile.c_str());
+				}
+			}
+			assetIndex++;
+		}
+
+		/*************************************************************************************/
+									/*LOADS MAP FROM LUA SCRIPT.*/
+		/*************************************************************************************/
+
+		sol::table levelMap = levelData["map"];
+		std::string mapTextureID = levelMap["textureAssetID"];
+		std::string mapFile = levelMap["file"];
+
+		map = new Map(mapTextureID, static_cast<int>(levelMap["scale"]), static_cast<int>(levelMap["tileSize"]));
+		map->LoadMap(mapFile, static_cast<int>(levelMap["mapSizeX"]), static_cast<int>(levelMap["mapSizeY"]));
+
+		/*************************************************************************************/
+							/*LOADS ENTITES AND COMPONENTS FROM LUA SCRIPT.*/
+		/*************************************************************************************/
+
+		sol::table levelEntities = levelData["entities"];
+		unsigned int entityIndex = 0;
+		while (true)
+		{
+			sol::optional<sol::table> exisitsEntityNode = levelEntities[entityIndex];
+			if (exisitsEntityNode == sol::nullopt)
+			{
+				break;
+			}
+			else
+			{
+				sol::table entity = levelEntities[entityIndex];
+				std::string entityName = entity["name"];
+				LayerType entityLayer = static_cast<LayerType>(static_cast<int>(entity["layer"]));
+
+				//Add new entity
+				auto& newEntity(manager.AddEntity(entityName, entityLayer));
+
+				//Add transform component
+				sol::optional<sol::table> existsTransformComponent = entity["components"];
+				if (existsTransformComponent != sol::nullopt)
+				{
+					newEntity.AddComponent<TransformComponent>(
+						static_cast<int>(entity["components"]["transform"]["position"]["y"]),
+						static_cast<int>(entity["components"]["transform"]["position"]["x"]),
+						static_cast<int>(entity["components"]["transform"]["velocity"]["y"]),
+						static_cast<int>(entity["components"]["transform"]["velocity"]["x"]),
+						static_cast<int>(entity["components"]["transform"]["height"]),
+						static_cast<int>(entity["components"]["transform"]["width"]),
+						static_cast<int>(entity["components"]["transform"]["scale"])
 						);
 				}
-				else
+				//Add sprite component
+				sol::optional<sol::table> existsSpriteComponent = entity["components"]["sprite"];
+				if (existsSpriteComponent != sol::nullopt)
 				{
-					newEntity.AddComponent<SpriteComponent>(textureID, false);
+					std::string textureID = entity["components"]["sprite"]["textureAssetID"];
+					bool isAnimated = entity["components"]["sprite"]["animated"];
+					if (isAnimated)
+					{
+						newEntity.AddComponent<SpriteComponent>(
+							textureID,
+							static_cast<int>(entity["components"]["sprite"]["frameCount"]),
+							static_cast<int>(entity["components"]["sprite"]["animationSpeed"]),
+							static_cast<bool>(entity["components"]["sprite"]["hasDirections"]),
+							static_cast<bool>(entity["components"]["sprite"]["fixed"])
+							);
+					}
+					else
+					{
+						newEntity.AddComponent<SpriteComponent>(textureID, false);
+					}
 				}
-			}
-			//Add input component
-			sol::optional<sol::table> existsInputComponent = entity["components"]["input"];
-			if (existsInputComponent != sol::nullopt)
-			{
-				sol::optional<sol::table> existsKeyboardInput = entity["components"]["input"]["keyboard"];
-				if (existsKeyboardInput != sol::nullopt)
+				//Add input component
+				sol::optional<sol::table> existsInputComponent = entity["components"]["input"];
+				if (existsInputComponent != sol::nullopt)
 				{
-					std::string upKey = entity["components"]["input"]["keyboard"]["up"];
-					std::string downKey = entity["components"]["input"]["keyboard"]["down"];
-					std::string leftKey = entity["components"]["input"]["keyboard"]["left"];
-					std::string rightKey = entity["components"]["input"]["keyboard"]["right"];
-					std::string shootKey = entity["components"]["input"]["keyboard"]["shoot"];
+					sol::optional<sol::table> existsKeyboardInput = entity["components"]["input"]["keyboard"];
+					if (existsKeyboardInput != sol::nullopt)
+					{
+						std::string upKey = entity["components"]["input"]["keyboard"]["up"];
+						std::string downKey = entity["components"]["input"]["keyboard"]["down"];
+						std::string leftKey = entity["components"]["input"]["keyboard"]["left"];
+						std::string rightKey = entity["components"]["input"]["keyboard"]["right"];
+						std::string shootKey = entity["components"]["input"]["keyboard"]["shoot"];
 
-					newEntity.AddComponent<ControlComponent>(upKey, downKey, leftKey, rightKey, shootKey);
+						newEntity.AddComponent<ControlComponent>(upKey, downKey, leftKey, rightKey, shootKey);
+					}
+				}
+				//Add collider component
+				sol::optional<sol::table> existsColliderComponent = entity["components"]["collider"];
+				if (existsColliderComponent != sol::nullopt)
+				{
+					std::string colliderTag = entity["components"]["collider"]["tag"];
+					newEntity.AddComponent<ColliderComponent>(
+						colliderTag,
+						static_cast<int>(entity["components"]["transform"]["position"]["x"]),
+						static_cast<int>(entity["components"]["transform"]["position"]["y"]),
+						static_cast<int>(entity["components"]["transform"]["width"]),
+						static_cast<int>(entity["components"]["transform"]["height"])
+						);
+				}
+				//Add PROJECTILE COMPONENT
+				sol::optional<sol::table> existsProjectileComponent = entity["components"]["projectileEmitter"];
+				if (existsProjectileComponent != sol::nullopt)
+				{
+					int parentEntityPosX = entity["components"]["transform"]["position"]["x"];
+					int parentEntityPosY = entity["components"]["transform"]["position"]["y"];
+					int parentEntityWidth = entity["components"]["transform"]["width"];
+					int parentEntityHeight = entity["components"]["transform"]["height"];
+					int projectileWidth = entity["components"]["projectileEmitter"]["width"];
+					int projectileHeight = entity["components"]["projectileEmitter"]["height"];
+					int projectileSpeed = entity["components"]["projectileEmitter"]["speed"];
+					int projectileRange = entity["components"]["projectileEmitter"]["range"];
+					int projectileAngle = entity["components"]["projectileEmitter"]["angle"];
+					bool projectileLoop = entity["components"]["projectileEmitter"]["shouldLoop"];
+					std::string textureAssetID = entity["components"]["projectileEmitter"]["textureAssetID"];
+					Entity& projectile(manager.AddEntity("projectile", PROJECTILE_LAYER)); //Create an entity attached to the parent.
+					projectile.AddComponent<TransformComponent>( //Projectile entity has a transform component.
+						parentEntityPosY + (parentEntityHeight / 2),
+						parentEntityPosX + (parentEntityWidth / 2),
+						0,
+						0,
+						projectileHeight,
+						projectileWidth,
+						1
+						);
+					projectile.AddComponent<SpriteComponent>(textureAssetID); //Projectile entity has a Sprite component.
+					projectile.AddComponent<ProjectileComponent>( //Projectile entity has a Pojectile component.
+						projectileSpeed,
+						projectileAngle,
+						projectileRange,
+						projectileLoop
+						);
+					projectile.AddComponent<ColliderComponent>(//Projectile entity has a Collider component.
+						"PROJECTILE",
+						parentEntityPosX,
+						parentEntityPosY,
+						projectileWidth,
+						projectileHeight
+						);
+				}
+				//Add collider component
+				sol::optional<sol::table> existsAudioComponent = entity["components"]["audio"];
+				if (existsAudioComponent != sol::nullopt)
+				{
+					std::string musicID = entity["components"]["audio"]["musicID"];
+					newEntity.AddComponent<AudioComponent>(musicID);
 				}
 			}
-			//Add collider component
-			sol::optional<sol::table> existsColliderComponent = entity["components"]["collider"];
-			if (existsColliderComponent != sol::nullopt)
-			{
-				std::string colliderTag = entity["components"]["collider"]["tag"];
-				newEntity.AddComponent<ColliderComponent>(
-					colliderTag,
-					static_cast<int>(entity["components"]["transform"]["position"]["x"]),
-					static_cast<int>(entity["components"]["transform"]["position"]["y"]),
-					static_cast<int>(entity["components"]["transform"]["width"]),
-					static_cast<int>(entity["components"]["transform"]["height"])
-					);
-			}
-			//Add PROJECTILE COMPONENT
-		sol::optional<sol::table> existsProjectileComponent = entity["components"]["projectileEmitter"];
-			if (existsProjectileComponent != sol::nullopt)
-			{
-				int parentEntityPosX = entity["components"]["transform"]["position"]["x"];
-				int parentEntityPosY = entity["components"]["transform"]["position"]["y"];
-				int parentEntityWidth = entity["components"]["transform"]["width"];
-				int parentEntityHeight = entity["components"]["transform"]["height"];
-				int projectileWidth = entity["components"]["projectileEmitter"]["width"];
-				int projectileHeight = entity["components"]["projectileEmitter"]["height"];
-				int projectileSpeed = entity["components"]["projectileEmitter"]["speed"];
-				int projectileRange = entity["components"]["projectileEmitter"]["range"];
-				int projectileAngle = entity["components"]["projectileEmitter"]["angle"];
-				bool projectileLoop = entity["components"]["projectileEmitter"]["shouldLoop"];
-				std::string textureAssetID = entity["components"]["projectileEmitter"]["textureAssetID"];
-				Entity& projectile(manager.AddEntity("projectile", PROJECTILE_LAYER)); //Create an entity attached to the parent.
-				projectile.AddComponent<TransformComponent>( //Projectile entity has a transform component.
-					parentEntityPosY + (parentEntityHeight / 2),
-					parentEntityPosX + (parentEntityWidth / 2),
-					0,
-					0,
-					projectileHeight,
-					projectileWidth,
-					1
-					);
-				projectile.AddComponent<SpriteComponent>(textureAssetID); //Projectile entity has a Sprite component.
-				projectile.AddComponent<ProjectileComponent>( //Projectile entity has a Pojectile component.
-					projectileSpeed,
-					projectileAngle,
-					projectileRange,
-					projectileLoop
-					);
-				projectile.AddComponent<ColliderComponent>(//Projectile entity has a Collider component.
-					"PROJECTILE",
-					parentEntityPosX,
-					parentEntityPosY,
-					projectileWidth,
-					projectileHeight
-				);
-			}
-						//Add collider component
-			sol::optional<sol::table> existsAudioComponent = entity["components"]["audio"];
-			if (existsAudioComponent != sol::nullopt)
-			{
-				std::string musicID = entity["components"]["audio"]["musicID"];
-				newEntity.AddComponent<AudioComponent>(musicID);
-			}
+			entityIndex++;
 		}
-		entityIndex++;
+		player = manager.GetEntityByName("player");
 	}
-	player = manager.GetEntityByName("player");
+	else {
+		std::cout << "INVALID SCRIPT" << std::endl;
+	}
 }
 
 void Engine::HandleCamera() {
@@ -317,6 +324,33 @@ void Engine::ProcessGameOver() {
 void Engine::ProcessNextLevel(int levelNumber) {
 	std::cout << "Next Level" << std::endl;
 	isRunning = false;
+}
+
+std::string Engine::CheckValidLua(std::string fileName)
+{
+	sol::state lua;
+	sol::load_result lr = lua.load_file(fileName);
+
+
+	if (!lr.valid()) { // This checks the syntax of your script, but does not execute it
+		sol::error err = lr;
+		std::string what = err.what();
+		std::cout << "call failed, sol::error::what() is " << what << std::endl;
+		return "FAIL";
+	}
+	else
+	{
+		sol::protected_function_result result1 = lr(); // this causes the script to execute
+		if (!result1.valid()) {
+			sol::error err = result1;
+			std::string what = err.what();
+			std::cout << "call failed, sol::error::what() is " << what << std::endl;
+			return "FAIL";
+		}
+		else
+			std::cout << "VALID SCRIPT" << std::endl;
+		return "PASS";
+	}
 }
 
 void Engine::Update()

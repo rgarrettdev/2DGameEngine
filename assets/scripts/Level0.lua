@@ -16,7 +16,6 @@ Level0 = {
         mapSizeX = 25,
         mapSizeY = 30
     },
-
     entities = {
         [0] = {
             name = "player",
