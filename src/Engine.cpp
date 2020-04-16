@@ -81,19 +81,23 @@ void Engine::Init(int width, int height)
 }
 
 void Engine::LoadLevel(int levelNumber) {
-	//ALL THIS WILL BE LOADED VIA Lua SCRIPT!!
 	sol::state lua;
 	lua.open_libraries(sol::lib::base, sol::lib::os, sol::lib::math);
 
 	std::string levelName = "Level" + std::to_string(levelNumber);
+	/*
+	*
+	* Checks the lua script for valid syntax
+	*
+	*/	
 	std::string validLua = Engine::CheckValidLua("./assets/scripts/" + levelName + ".lua");
 	if (validLua == "PASS")
 	{
 		lua.script_file("./assets/scripts/" + levelName + ".lua");
 
-		/*************************************************************************************/
-								/*LOADS ASSETS FROM LUA SCRIPT.*/
-		/*************************************************************************************/
+		/*
+		* LOADS ASSETS FROM LUA SCRIPT.
+		*/
 		sol::table levelData = lua[levelName];
 		sol::table levelAssets = levelData["assets"];
 		unsigned int assetIndex = 0;
@@ -131,9 +135,9 @@ void Engine::LoadLevel(int levelNumber) {
 			assetIndex++;
 		}
 
-		/*************************************************************************************/
-									/*LOADS MAP FROM LUA SCRIPT.*/
-		/*************************************************************************************/
+		/*
+		* LOADS MAP FROM LUA SCRIPT.
+		*/
 
 		sol::table levelMap = levelData["map"];
 		std::string mapTextureID = levelMap["textureAssetID"];
@@ -142,9 +146,9 @@ void Engine::LoadLevel(int levelNumber) {
 		map = new Map(mapTextureID, static_cast<int>(levelMap["scale"]), static_cast<int>(levelMap["tileSize"]));
 		map->LoadMap(mapFile, static_cast<int>(levelMap["mapSizeX"]), static_cast<int>(levelMap["mapSizeY"]));
 
-		/*************************************************************************************/
-							/*LOADS ENTITES AND COMPONENTS FROM LUA SCRIPT.*/
-		/*************************************************************************************/
+		/*
+		* LOADS ENTITES AND COMPONENTS FROM LUA SCRIPT.
+		*/
 
 		sol::table levelEntities = levelData["entities"];
 		unsigned int entityIndex = 0;
@@ -354,8 +358,10 @@ std::string Engine::CheckValidLua(std::string fileName)
 }
 
 void Engine::Update()
-{	/**Loop is used to allow the program to wait until ~16ms has ellapsed since last frame.
-	This is important check on faster hardware, as it could of updated the game in less than ~16ms**/
+{	/*
+	* Loop is used to allow the program to wait until ~16ms has ellapsed since last frame.
+	* This is important check on faster hardware, as it could of updated the game in less than ~16ms.
+	*/
 	while (!SDL_TICKS_PASSED(SDL_GetTicks(), ticksLastFrame + FRAME_TIME_TARGET));
 
 	// deltaTime equals the difference in ticks from the last frame converted to seconds.
@@ -376,8 +382,10 @@ void Engine::Update()
 
 void Engine::Render()
 {
-	/*This funtion clears the back buffer, it then draws all the game objects.
-	Finally it swaps the front and back buffer. This is called Double Buffering*/
+	/* 
+	* This funtion clears the back buffer, it then draws all the game objects.
+	* Finally it swaps the front and back buffer. This is called Double Buffering
+	*/
 
 	SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255); //Set background colour.
 	SDL_RenderClear(renderer); //Clear the backbuffer.
