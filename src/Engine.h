@@ -15,7 +15,7 @@ public:
 	Engine(); //Consturctor
 	~Engine(); //Destructor
 	bool IsRunning() const;
-	void Init(int width, int height);
+	void Init();
 	void Input();
 	void Update();
 	void Render();
@@ -30,6 +30,7 @@ public:
 	void ProcessGameOver();
 	void ProcessNextLevel(int levelNumber);
 	std::string CheckValidLua(std::string fileName);
+	SDL_DisplayMode displayResolution();
 
 private:
 	bool isRunning;

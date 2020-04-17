@@ -130,4 +130,10 @@
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="diagrams\ECS_ClassDiagram.cd" />
+    <None Include="diagrams\EC_Assoc_ClassDiagram.cd" />
+    <None Include="diagrams\EM_Assoc_ClassDiagram.cd" />
+    <None Include="diagrams\Engine_Assoc_ClassDiagram.cd" />
+  </ItemGroup>
 </Project>

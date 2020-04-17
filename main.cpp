@@ -7,7 +7,7 @@ int main(int argc, char* argv[])
 {
 	Engine* engine = new Engine();
 
-	engine->Init(WINDOW_WIDTH, WINDOW_HEIGHT);
+	engine->Init();
 
 	while (engine->IsRunning())
 	{

@@ -12,7 +12,6 @@
 #include <glm.hpp>
 #include <sol.hpp>
 
-
 EntityManager manager;
 AssetManager* Engine::assetManager = new AssetManager(&manager); //Instationating the static asset manager
 SDL_Renderer* Engine::renderer;
@@ -37,7 +36,7 @@ bool Engine::IsRunning() const
 	return this->isRunning;
 }
 
-void Engine::Init(int width, int height)
+void Engine::Init()
 {
 	if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
 	{
@@ -52,14 +51,18 @@ void Engine::Init(int width, int height)
 	if (Mix_OpenAudio(48000, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
 	{
 		std::cout << "Error: " << Mix_GetError() << std::endl;
+		return;
 	}
+	SDL_DisplayMode display = Engine::displayResolution();
+	auto width = display.w / 2;
+	auto height = display.h / 2;
 	window = SDL_CreateWindow(
 		NULL,
 		SDL_WINDOWPOS_CENTERED,
 		SDL_WINDOWPOS_CENTERED,
 		width,
 		height,
-		SDL_WINDOW_BORDERLESS
+		SDL_WINDOW_RESIZABLE
 	);
 	if (!window) //Check if window was created.
 	{
@@ -72,6 +75,11 @@ void Engine::Init(int width, int height)
 		std::cerr << "Error initialising SDL. SDL ERROR: " << SDL_GetError() << std::endl;
 		return;
 	}
+	/*
+	* Overwrite camera properties with new width and height values.
+	*/
+	camera.x = width; 
+	camera.y = height;
 
 	LoadLevel(0);
 	manager.ListAllEntities();
@@ -293,9 +301,11 @@ void Engine::HandleCamera() {
 
 	if (player)
 	{
+		int width, height;
+		SDL_GetWindowSize(window, &width, &height);
 		TransformComponent* playerTransform = player->GetComponent<TransformComponent>();
-		camera.x = playerTransform->position.x - (WINDOW_WIDTH / 2);
-		camera.y = playerTransform->position.y - (WINDOW_HEIGHT / 2);
+		camera.x = playerTransform->position.x - (width / 2);
+		camera.y = playerTransform->position.y - (height / 2);
 
 		camera.x = camera.x < 0 ? 0 : camera.x;
 		camera.y = camera.y < 0 ? 0 : camera.y;
@@ -354,6 +364,16 @@ std::string Engine::CheckValidLua(std::string fileName)
 		else
 			std::cout << "VALID SCRIPT" << std::endl;
 		return "PASS";
+	}
+}
+
+SDL_DisplayMode Engine::displayResolution()
+{
+	SDL_DisplayMode displayMode;
+	if (SDL_GetDesktopDisplayMode(0, &displayMode) != 0)
+	{
+		std::cout << "Display Error: " << SDL_GetError() << std::endl;
+		return displayMode;
 	}
 }
 
