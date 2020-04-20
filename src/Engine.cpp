@@ -57,7 +57,7 @@ void Engine::Init()
 	auto width = display.w / 2;
 	auto height = display.h / 2;
 	window = SDL_CreateWindow(
-		NULL,
+		"2DGameEngine",
 		SDL_WINDOWPOS_CENTERED,
 		SDL_WINDOWPOS_CENTERED,
 		width,
