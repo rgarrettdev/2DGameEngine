@@ -69,12 +69,15 @@ void Engine::Init()
 		std::cerr << "Error initialising SDL. SDL ERROR: " << SDL_GetError() << std::endl;
 		return;
 	}
-	renderer = SDL_CreateRenderer(window, -1, 0); // -1 sets the default display to be the traget of the renderer.
+	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED); // -1 sets the default display to be the traget of the renderer.
 	if (!renderer) //Check if renderer was created.
 	{
 		std::cerr << "Error initialising SDL. SDL ERROR: " << SDL_GetError() << std::endl;
 		return;
 	}
+	SDL_RendererInfo info;
+	SDL_GetRendererInfo(renderer, &info);
+	std::cout << "Renderer driver:" << info.name << std::endl;
 	/*
 	* Overwrite camera properties with new width and height values.
 	*/
