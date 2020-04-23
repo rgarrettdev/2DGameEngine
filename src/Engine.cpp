@@ -385,7 +385,12 @@ void Engine::Update()
 	* Loop is used to allow the program to wait until ~16ms has ellapsed since last frame.
 	* This is important check on faster hardware, as it could of updated the game in less than ~16ms.
 	*/
-	while (!SDL_TICKS_PASSED(SDL_GetTicks(), ticksLastFrame + FRAME_TIME_TARGET));
+	int timeToWait = FRAME_TIME_TARGET - (SDL_GetTicks() - ticksLastFrame);
+
+	if (timeToWait > 0 && timeToWait <= FRAME_TIME_TARGET)
+	{
+		SDL_Delay(timeToWait);
+	}
 
 	// deltaTime equals the difference in ticks from the last frame converted to seconds.
 	float deltaTime = (SDL_GetTicks() - ticksLastFrame) / 1000.0f;
