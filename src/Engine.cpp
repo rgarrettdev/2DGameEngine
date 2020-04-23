@@ -376,8 +376,8 @@ SDL_DisplayMode Engine::displayResolution()
 	if (SDL_GetDesktopDisplayMode(0, &displayMode) != 0)
 	{
 		std::cout << "Display Error: " << SDL_GetError() << std::endl;
-		return displayMode;
 	}
+	return displayMode;
 }
 
 void Engine::Update()
