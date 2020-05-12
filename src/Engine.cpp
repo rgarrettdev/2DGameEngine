@@ -283,12 +283,29 @@ void Engine::LoadLevel(int levelNumber) {
 						projectileHeight
 						);
 				}
-				//Add collider component
+				//Add audio component
 				sol::optional<sol::table> existsAudioComponent = entity["components"]["audio"];
 				if (existsAudioComponent != sol::nullopt)
 				{
 					std::string musicID = entity["components"]["audio"]["musicID"];
 					newEntity.AddComponent<AudioComponent>(musicID);
+				}
+				//Add UI component
+				sol::optional<sol::table> existsUiComponent = entity["components"]["ui"];
+				if (existsUiComponent != sol::nullopt)
+				{
+					int uiPosX = entity["components"]["ui"]["x"];
+					int uiPosY = entity["components"]["ui"]["y"];
+					std::string text = entity["components"]["ui"]["content"];
+					std::string fontFamily = entity["components"]["ui"]["fontFamily"];
+					const SDL_Color colour = { 255,255,255,255 };
+					newEntity.AddComponent<UiTextComponent>(
+						uiPosX,
+						uiPosY,
+						text,
+						fontFamily,
+						colour
+						);
 				}
 			}
 			entityIndex++;
