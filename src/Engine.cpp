@@ -38,7 +38,7 @@ bool Engine::IsRunning() const
 
 void Engine::Init()
 {
-	if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0)
 	{
 		std::cerr << "Error initialising SDL. SDL ERROR: " << SDL_GetError() << std::endl;
 		return;
